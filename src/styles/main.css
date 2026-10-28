@@ -31,6 +31,11 @@
   /* Layout */
   --max-w: 1280px;
   --page-x: 32px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+  --header-h: 108px;
 }
 
 /* ============================================================
@@ -62,13 +67,49 @@ img {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
+  padding-top: var(--header-h);
 }
 
 /* ============================================================
    HEADER
    ============================================================ */
+
+/* Fixed header */
 .site-header {
-  border-bottom: 1px solid var(--ink-hairline);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
+}
+
+.site-header--scrolled {
+  background: var(--bg-linen);
+  border-bottom-color: var(--ink-hairline);
+}
+
+/* Dark-section header: light text, transparent bg (overrides --scrolled linen) */
+.site-header--dark,
+.site-header--scrolled.site-header--dark {
+  color: var(--dark-text);
+  background: transparent;
+  border-bottom-color: transparent;
+}
+.site-header--dark .logo__mark path,
+.site-header--dark .badge__gem path {
+  stroke: var(--dark-text);
+}
+.site-header--dark .logo__wordmark {
+  color: var(--dark-text);
+}
+.site-header--dark .main-nav a {
+  color: var(--dark-text);
+}
+.site-header--dark .main-nav__cta {
+  border-color: rgba(238,233,223,0.5);
 }
 
 .site-header__inner {
@@ -87,6 +128,7 @@ img {
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  color: inherit;   /* inherits from header for dark-mode switch */
 }
 
 .logo__mark {
@@ -122,6 +164,160 @@ img {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+}
+
+/* Badge logo */
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+.badge__ring {
+  position: absolute;
+  inset: 0;
+  animation: badge-spin 40s linear infinite;
+  transform-origin: center;
+}
+.badge__gem {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+@keyframes badge-spin {
+  to { transform: rotate(360deg); }
+}
+.logo:hover .badge__ring,
+.logo:focus-visible .badge__ring {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge__ring { animation: none; }
+}
+/* Menu button — hidden on desktop, shown on mobile */
+.menu-btn {
+  display: none;
+  align-items: center;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 8px 18px;
+  min-height: 40px;
+  cursor: pointer;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* Mobile: one-row header — badge+wordmark left, Menu right */
+@media (max-width: 640px) {
+  :root { --page-x: 20px; --header-h: 64px; }
+  .site-header__inner {
+    padding: 12px 20px;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+  .badge { width: 40px; height: 40px; }
+  .badge__ring { width: 40px; height: 40px; }
+  .main-nav { display: none; }
+  .menu-btn { display: inline-flex; }
+}
+
+/* ============================================================
+   NAV OVERLAY (full-screen mobile menu)
+   ============================================================ */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-linen);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px 40px;
+  box-sizing: border-box;
+}
+.nav-overlay[hidden] { display: none; }
+
+.nav-overlay__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.nav-overlay__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.nav-overlay__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--ink-hairline);
+  border-radius: 999px;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.nav-overlay__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 0;
+}
+
+.nav-overlay__link {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 13vw, 56px);
+  line-height: 1.15;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+}
+
+.nav-overlay__link:hover { color: var(--accent); }
+
+.nav-overlay__cta {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 24px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 14px 28px;
+  min-height: 48px;
+  align-self: flex-start;
+}
+
+.nav-overlay__cta:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ============================================================
+   ANCHOR OFFSET — ensure fixed header never covers content
+   ============================================================ */
+#origin, #record, #trade, #inquire {
+  scroll-margin-top: calc(var(--header-h) + 16px);
 }
 
 /* ============================================================
@@ -312,6 +508,40 @@ img {
   margin: 0;
   font-size: 12px;
   color: var(--ink-label);
+}
+
+/* ============================================================
+   MARQUEE STRIP
+   ============================================================ */
+.marquee {
+  overflow: hidden;
+  border-top: 1px solid var(--ink-hairline);
+  border-bottom: 1px solid var(--ink-hairline);
+  padding: 18px 0;
+  cursor: default;
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+.marquee__text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 40px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ink);
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
 }
 
 /* ============================================================
@@ -1157,4 +1387,37 @@ select.field__input {
   font-size: 13px;
   color: var(--ink-label);
   width: 100%;
+}
+
+/* ============================================================
+   SCROLL REVEALS
+   ============================================================ */
+
+/* Scroll reveals — only when JS loaded */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+html.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+/* Staggered children inside a reveal group */
+html.js [data-rg] > [data-ri] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+html.js [data-rg] > [data-ri].is-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal],
+  html.js [data-rg] > [data-ri] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

@@ -1,8 +1,21 @@
 <header class="site-header">
 <div class="site-header__inner">
-<a href="index.html" class="logo">
-<svg class="logo__mark" width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="#1A1916" stroke-width="1.2" aria-hidden="true"><path d="M5 1h12l4 7-10 17L1 8z"/><path d="M1 8h20M8 1l-2 7 5 17 5-17-2-7"/></svg>
-<span class="logo__wordmark">CEYLON GEM HOUSE</span>
+<a href="index.html" class="logo" aria-label="Ceylon Gem House — home">
+  <span class="badge">
+    <svg class="badge__ring" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="badge-arc" d="M32,32 m-26,0 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0"/>
+      </defs>
+      <text font-family="Instrument Sans, system-ui, sans-serif" font-size="7.2" font-weight="500" fill="currentColor" letter-spacing="2.1">
+        <textPath href="#badge-arc">CEYLON GEM HOUSE · RATNAPURA · SRI LANKA ·&nbsp;&nbsp;</textPath>
+      </text>
+    </svg>
+    <svg class="badge__gem" width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true" focusable="false">
+      <path d="M5 1h12l4 7-10 17L1 8z"/>
+      <path d="M1 8h20M8 1l-2 7 5 17 5-17-2-7"/>
+    </svg>
+  </span>
+  <span class="logo__wordmark" aria-hidden="true">CEYLON GEM HOUSE</span>
 </a>
 <nav aria-label="Main" class="main-nav">
 <a href="stone.html">Stones</a>
@@ -11,5 +24,29 @@
 <a href="index.html#trade">Trade</a>
 <a href="index.html#inquire" class="main-nav__cta">Inquire</a>
 </nav>
+<button class="menu-btn" aria-expanded="false" aria-controls="nav-overlay" aria-label="Open navigation">Menu</button>
 </div>
 </header>
+<div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+  <div class="nav-overlay__bar">
+    <a href="index.html" class="logo nav-overlay__logo" aria-label="Ceylon Gem House — home" tabindex="-1">
+      <svg class="badge__gem" width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true" focusable="false">
+        <path d="M5 1h12l4 7-10 17L1 8z"/>
+        <path d="M1 8h20M8 1l-2 7 5 17 5-17-2-7"/>
+      </svg>
+      <span class="logo__wordmark" aria-hidden="true">CEYLON GEM HOUSE</span>
+    </a>
+    <button class="nav-overlay__close" aria-label="Close navigation">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="nav-overlay__nav" aria-label="Site navigation">
+    <a href="stone.html" class="nav-overlay__link">Stones</a>
+    <a href="index.html#origin" class="nav-overlay__link">Origin</a>
+    <a href="index.html#record" class="nav-overlay__link">The record</a>
+    <a href="index.html#trade" class="nav-overlay__link">Trade</a>
+    <a href="index.html#inquire" class="nav-overlay__cta">Inquire</a>
+  </nav>
+</div>

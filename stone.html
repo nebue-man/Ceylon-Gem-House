@@ -6,7 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.svg">
 <link rel="stylesheet" href="/src/styles/main.css">
+<script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 <div class="site">
@@ -18,7 +21,7 @@
 <section class="stone">
 
 <!-- Media -->
-<div class="stone__media">
+<div class="stone__media" data-reveal>
 <div class="stone__img-wrap">
 <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in daylight-balanced studio light">
 </div>
@@ -33,14 +36,14 @@
 </div>
 
 <!-- Details -->
-<div class="stone__details">
-<div>
+<div class="stone__details" data-rg>
+<div data-ri>
 <p class="stone__lot">LOT [CGH-0001]</p>
 <h1 class="stone__heading">Blue sapphire<br><em>oval, [X.XX] ct</em></h1>
 <p class="stone__price">Price on request <span>· reply within [24] hours</span></p>
 </div>
 
-<div>
+<div data-ri>
 <h2 class="facts-block__heading">KEY FACTS</h2>
 <dl class="facts-block__dl">
 <dt class="facts-block__dt">Weight</dt><dd class="facts-block__dd">[X.XX] ct</dd>
@@ -51,7 +54,7 @@
 </dl>
 </div>
 
-<div class="lab-block">
+<div class="lab-block" data-ri>
 <div class="lab-block__header">
 <h2 class="lab-block__heading">LABORATORY REPORT</h2>
 <a href="#" class="lab-block__verify">Verify on lab site ↗</a>
@@ -64,7 +67,7 @@
 <p class="lab-block__note">Origin on a lab report is the lab's opinion. We do not state origin or treatment in our own words.</p>
 </div>
 
-<div class="provenance">
+<div class="provenance" data-ri>
 <h2 class="provenance__heading">PROVENANCE RECORD</h2>
 <ol class="provenance__list">
 <li class="provenance__item"><span class="provenance__sublabel">Found</span>[District], Sri Lanka · [Year]</li>
@@ -74,12 +77,12 @@
 </ol>
 </div>
 
-<div class="selector-note">
+<div class="selector-note" data-ri>
 <h2 class="selector-note__heading">SELECTOR'S NOTE</h2>
 <p class="selector-note__text">[One sentence, in the selector's own words, on why this stone was chosen.]</p>
 </div>
 
-<div id="inquire" class="stone-inquire">
+<div id="inquire" class="stone-inquire" data-ri>
 <a href="index.html#inquire" class="btn-primary--accent">Inquire about this stone</a>
 <a href="#" class="btn-outline">Book a viewing call</a>
 </div>
