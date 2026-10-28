@@ -20,74 +20,116 @@
 
 <section class="stone">
 
-<!-- Media -->
-<div class="stone__media" data-reveal>
-<div class="stone__img-wrap">
-<img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in daylight-balanced studio light">
-</div>
-<div role="group" aria-label="Lighting" class="stone__lighting">
-<button type="button" class="lighting-btn lighting-btn--active">Daylight</button>
-<button type="button" class="lighting-btn">Warm light</button>
-<button type="button" class="lighting-btn">LED</button>
-<button type="button" class="lighting-btn">Video, unedited</button>
-<button type="button" class="lighting-btn">With colour card</button>
-</div>
-<p class="stone__media-caption">Concept image. Live listings show the actual stone, labelled by lighting, with no colour editing.</p>
-</div>
+  <!-- Left: media column (scrolls) -->
+  <div class="stone__media-col">
 
-<!-- Details -->
-<div class="stone__details" data-rg>
-<div data-ri>
-<p class="stone__lot">LOT [CGH-0001]</p>
-<h1 class="stone__heading">Blue sapphire<br><em>oval, [X.XX] ct</em></h1>
-<p class="stone__price">Price on request <span>· reply within [24] hours</span></p>
-</div>
+    <!-- Lighting nav: sticky-aware index, scrolls to each frame -->
+    <nav class="stone__lighting-nav" aria-label="Lighting">
+      <button class="lighting-btn" data-target="stone-frame-0" aria-current="true">Daylight</button>
+      <button class="lighting-btn" data-target="stone-frame-1">Warm light</button>
+      <button class="lighting-btn" data-target="stone-frame-2">LED</button>
+      <button class="lighting-btn" data-target="stone-frame-3">Video, unedited</button>
+      <button class="lighting-btn" data-target="stone-frame-4">With colour card</button>
+    </nav>
 
-<div data-ri>
-<h2 class="facts-block__heading">KEY FACTS</h2>
-<dl class="facts-block__dl">
-<dt class="facts-block__dt">Weight</dt><dd class="facts-block__dd">[X.XX] ct</dd>
-<dt class="facts-block__dt">Dimensions</dt><dd class="facts-block__dd">[L × W × D] mm</dd>
-<dt class="facts-block__dt">Shape &amp; cut</dt><dd class="facts-block__dd">Oval, brilliant crown, step pavilion</dd>
-<dt class="facts-block__dt">Colour</dt><dd class="facts-block__dd">[Medium-dark, strongly saturated violetish blue]</dd>
-<dt class="facts-block__dt">Clarity</dt><dd class="facts-block__dd">[Eye-clean at 30 cm in daylight]</dd>
-</dl>
-</div>
+    <figure class="stone__frame" id="stone-frame-0" data-reveal>
+      <div class="stone__img-wrap">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in daylight-balanced studio light">
+      </div>
+      <figcaption class="stone__frame-label">Daylight</figcaption>
+    </figure>
 
-<div class="lab-block" data-ri>
-<div class="lab-block__header">
-<h2 class="lab-block__heading">LABORATORY REPORT</h2>
-<a href="#" class="lab-block__verify">Verify on lab site ↗</a>
-</div>
-<p class="lab-block__report">[LAB] report no. [NO.], [DATE]</p>
-<dl class="lab-block__dl">
-<dt>Origin</dt><dd>Sri Lanka, per this report</dd>
-<dt>Treatment</dt><dd>[Heated / No indications of heating], per this report</dd>
-</dl>
-<p class="lab-block__note">Origin on a lab report is the lab's opinion. We do not state origin or treatment in our own words.</p>
-</div>
+    <figure class="stone__frame" id="stone-frame-1" data-reveal>
+      <div class="stone__img-wrap">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in warm light" loading="lazy">
+      </div>
+      <figcaption class="stone__frame-label">Warm light</figcaption>
+    </figure>
 
-<div class="provenance" data-ri>
-<h2 class="provenance__heading">PROVENANCE RECORD</h2>
-<ol class="provenance__list">
-<li class="provenance__item"><span class="provenance__sublabel">Found</span>[District], Sri Lanka · [Year]</li>
-<li class="provenance__item"><span class="provenance__sublabel">Acquired</span>Rough, from [source] · [Month Year]</li>
-<li class="provenance__item"><span class="provenance__sublabel">Cut</span>By [cutter's name], Ratnapura</li>
-<li class="provenance__item"><span class="provenance__sublabel">Export</span>NGJA sealed parcel, ref. [NO.]</li>
-</ol>
-</div>
+    <figure class="stone__frame" id="stone-frame-2" data-reveal>
+      <div class="stone__img-wrap">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, under LED" loading="lazy">
+      </div>
+      <figcaption class="stone__frame-label">LED</figcaption>
+    </figure>
 
-<div class="selector-note" data-ri>
-<h2 class="selector-note__heading">SELECTOR'S NOTE</h2>
-<p class="selector-note__text">[One sentence, in the selector's own words, on why this stone was chosen.]</p>
-</div>
+    <figure class="stone__frame" id="stone-frame-3" data-reveal>
+      <div class="stone__img-wrap stone__img-wrap--video">
+        <div class="stone__video-placeholder">
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true" focusable="false">
+            <circle cx="26" cy="26" r="25" stroke="rgba(238,233,223,0.3)" stroke-width="1.2"/>
+            <path d="M22 18l14 8-14 8V18z" fill="rgba(238,233,223,0.85)"/>
+          </svg>
+          <span>[Video placeholder]</span>
+        </div>
+      </div>
+      <figcaption class="stone__frame-label">Video, unedited</figcaption>
+    </figure>
 
-<div id="inquire" class="stone-inquire" data-ri>
-<a href="index.html#inquire" class="btn-primary--accent">Inquire about this stone</a>
-<a href="#" class="btn-outline">Book a viewing call</a>
-</div>
-<p class="stone-inquire__note">Insured, signed-for delivery worldwide. [Return terms].</p>
-</div>
+    <figure class="stone__frame" id="stone-frame-4" data-reveal>
+      <div class="stone__img-wrap">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, with colour card" loading="lazy">
+      </div>
+      <figcaption class="stone__frame-label">With colour card</figcaption>
+    </figure>
+
+    <p class="stone__media-caption">Concept image. Live listings show the actual stone, labelled by lighting, with no colour editing.</p>
+  </div>
+
+  <!-- Right: details column (sticky, internal scroll when tall) -->
+  <div class="stone__details" data-rg>
+    <div data-ri>
+      <p class="stone__lot">LOT [CGH-0001]</p>
+      <h1 class="stone__heading">Blue sapphire<br><em>oval, [X.XX] ct</em></h1>
+      <p class="stone__price">Price on request <span>· reply within [24] hours</span></p>
+    </div>
+
+    <div data-ri>
+      <h2 class="facts-block__heading">KEY FACTS</h2>
+      <dl class="facts-block__dl">
+        <dt class="facts-block__dt">Weight</dt><dd class="facts-block__dd">[X.XX] ct</dd>
+        <dt class="facts-block__dt">Dimensions</dt><dd class="facts-block__dd">[L × W × D] mm</dd>
+        <dt class="facts-block__dt">Shape &amp; cut</dt><dd class="facts-block__dd">Oval, brilliant crown, step pavilion</dd>
+        <dt class="facts-block__dt">Colour</dt><dd class="facts-block__dd">[Medium-dark, strongly saturated violetish blue]</dd>
+        <dt class="facts-block__dt">Clarity</dt><dd class="facts-block__dd">[Eye-clean at 30 cm in daylight]</dd>
+      </dl>
+    </div>
+
+    <div class="lab-block" data-ri>
+      <div class="lab-block__header">
+        <h2 class="lab-block__heading">LABORATORY REPORT</h2>
+        <a href="#" class="lab-block__verify">Verify on lab site ↗</a>
+      </div>
+      <p class="lab-block__report">[LAB] report no. [NO.], [DATE]</p>
+      <dl class="lab-block__dl">
+        <dt>Origin</dt><dd>Sri Lanka, per this report</dd>
+        <dt>Treatment</dt><dd>[Heated / No indications of heating], per this report</dd>
+      </dl>
+      <p class="lab-block__note">Origin on a lab report is the lab's opinion. We do not state origin or treatment in our own words.</p>
+    </div>
+
+    <div class="provenance" data-ri>
+      <h2 class="provenance__heading">PROVENANCE RECORD</h2>
+      <ol class="provenance__list">
+        <li class="provenance__item"><span class="provenance__sublabel">Found</span>[District], Sri Lanka · [Year]</li>
+        <li class="provenance__item"><span class="provenance__sublabel">Acquired</span>Rough, from [source] · [Month Year]</li>
+        <li class="provenance__item"><span class="provenance__sublabel">Cut</span>By [cutter's name], Ratnapura</li>
+        <li class="provenance__item"><span class="provenance__sublabel">Export</span>NGJA sealed parcel, ref. [NO.]</li>
+      </ol>
+    </div>
+
+    <div class="selector-note" data-ri>
+      <h2 class="selector-note__heading">SELECTOR'S NOTE</h2>
+      <p class="selector-note__text">[One sentence, in the selector's own words, on why this stone was chosen.]</p>
+    </div>
+
+    <div id="inquire" class="stone-inquire" data-ri>
+      <a href="index.html#inquire" class="btn-primary--accent">Inquire about this stone</a>
+      <a href="#" class="btn-outline">Book a viewing call</a>
+    </div>
+    <p class="stone-inquire__note">Insured, signed-for delivery worldwide. [Return terms].</p>
+  </div>
+
 </section>
 
 <!--FOOTER_STONE-->

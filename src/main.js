@@ -173,6 +173,85 @@ if (!reduced) {
   document.querySelectorAll('[data-rg]').forEach(el => groupIO.observe(el));
 }
 
+// ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
+(function () {
+  const details = document.querySelector('.stone__details');
+  if (!details) return;
+
+  function update() {
+    const headerH = header?.offsetHeight ?? 108;
+    const viewH   = window.innerHeight;
+    const colH    = details.offsetHeight;
+    const topA    = headerH + 24;                 // short column: stick under header
+    const topB    = viewH - colH - 24;            // tall column: stick bottom 24px above fold
+    details.style.setProperty('--stone-details-top', Math.min(topA, topB) + 'px');
+  }
+
+  const ro = new ResizeObserver(update);
+  ro.observe(details);
+  ro.observe(document.documentElement);
+  window.addEventListener('resize', update, { passive: true });
+  document.fonts.ready.then(update);
+  update();
+}());
+
+// ─── Stone page: lighting nav (sticky-aware index) ───────────────────
+(function () {
+  const lightingNav = document.querySelector('.stone__lighting-nav');
+  if (!lightingNav) return;
+
+  const btns   = [...lightingNav.querySelectorAll('.lighting-btn')];
+  const frames = [...document.querySelectorAll('.stone__frame')];
+  if (!btns.length || !frames.length) return;
+
+  function setActive(idx) {
+    btns.forEach((btn, i) => {
+      const on = i === idx;
+      btn.classList.toggle('lighting-btn--active', on);
+      btn.setAttribute('aria-current', on ? 'true' : 'false');
+    });
+  }
+
+  // Button click → immediate active feedback + scroll to that frame
+  btns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      setActive(i);
+      const frame = frames[i];
+      if (!frame) return;
+      const headerH = header?.offsetHeight ?? 108;
+      const navH    = lightingNav.offsetHeight;
+      const offset  = -(headerH + 24 + navH + 8);
+      if (lenis) {
+        lenis.scrollTo(frame, { offset });
+      } else {
+        const y = frame.getBoundingClientRect().top + window.scrollY + offset;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    });
+  });
+
+  // IntersectionObserver: track which frame is topmost in the reading zone
+  const headerH = header?.offsetHeight ?? 108;
+  const navH    = lightingNav.offsetHeight;
+  const topCrop = headerH + 16 + navH;
+
+  const visible = new Set();
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) visible.add(e.target);
+      else visible.delete(e.target);
+    });
+    const topmost = frames.find(f => visible.has(f));
+    if (topmost !== undefined) setActive(frames.indexOf(topmost));
+  }, {
+    rootMargin: `-${topCrop}px 0px -15% 0px`,
+    threshold: 0,
+  });
+
+  frames.forEach(f => io.observe(f));
+  setActive(0);
+}());
+
 // ─── Origin pinned experience ────────────────────────────────────────
 (function () {
   const pin = document.querySelector('.origin-pin');

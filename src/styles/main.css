@@ -1293,44 +1293,93 @@ select.field__input {
 }
 
 /* ============================================================
-   STONE PAGE — LAYOUT
+   STONE PAGE — LAYOUT (two columns: media left scrolls, details right sticky)
    ============================================================ */
 .stone {
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 40px var(--page-x) 96px;
+  display: grid;
+  grid-template-columns: 58fr 42fr;
+  gap: 56px 72px;
+  align-items: start;
+}
+
+/* Media column (left — scrolls) */
+.stone__media-col {
+  min-width: 0;
+}
+
+/* Lighting nav — sticky within left column */
+.stone__lighting-nav {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
-  gap: 56px 72px;
-  align-items: flex-start;
+  gap: 8px;
+  padding: 16px 0;
+  background: var(--bg-linen);
+  margin-bottom: 32px;
 }
 
-/* Media column */
-.stone__media {
-  flex: 1 1 560px;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* Each media frame */
+.stone__frame {
+  margin: 0 0 56px;
+  scroll-margin-top: calc(var(--header-h) + 96px);
 }
 
+.stone__frame:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Image wrapper — 4:5 aspect, navy background */
 .stone__img-wrap {
   background: var(--navy);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  position: relative;
 }
 
 .stone__img-wrap img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
   object-position: 50% 55%;
+  display: block;
 }
 
-.stone__lighting {
+/* Video placeholder */
+.stone__video-placeholder {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
+.stone__video-placeholder span {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--dark-label);
+  text-transform: uppercase;
+}
+
+/* Frame label — spaced caps under each image */
+.stone__frame-label {
+  display: block;
+  margin: 12px 0 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+  color: var(--ink-label);
+  text-transform: uppercase;
+}
+
+/* Lighting button */
 .lighting-btn {
   font: inherit;
   font-size: 13px;
@@ -1341,27 +1390,43 @@ select.field__input {
   border-radius: 999px;
   padding: 10px 18px;
   min-height: 44px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
+.lighting-btn[aria-current="true"],
 .lighting-btn--active {
   background: var(--ink);
   color: var(--bg-linen);
   border-color: var(--ink);
 }
 
+/* Media caption (bottom of left column) */
 .stone__media-caption {
-  margin: 0;
+  margin: 40px 0 0;
   font-size: 12px;
   color: var(--ink-label);
 }
 
-/* Details column */
+/* Details column (right — sticky, JS sets --stone-details-top via ResizeObserver) */
 .stone__details {
-  flex: 1 1 420px;
+  position: sticky;
+  top: var(--stone-details-top, calc(var(--header-h) + 24px));
   display: flex;
   flex-direction: column;
   gap: 40px;
 }
+
+/* ≤900px or reduced-motion: stack columns, remove sticky */
+@media (max-width: 900px) {
+  .stone {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .stone__lighting-nav { position: static; }
+  .stone__details { position: static; }
+}
+
+/* reduced-motion: only smooth scroll + reveals off; sticky stays */
 
 .stone__lot {
   margin: 0 0 14px;
