@@ -13,20 +13,47 @@ function readSiteUrl() {
   return match ? match[1].trim().replace(/\/$/, '') : 'https://example.com';
 }
 
+// Read the manifest written by gen-images.js to know which widths were generated.
+function readManifest() {
+  const p = resolve(__dirname, 'public', 'img', 'webp', 'manifest.json');
+  if (!existsSync(p)) return {};
+  try { return JSON.parse(readFileSync(p, 'utf-8')); } catch { return {}; }
+}
+
 const SITE_URL = readSiteUrl();
 
 function partialsPlugin() {
   return {
     name: 'partials',
-    transformIndexHtml(html) {
-      const header     = readFileSync(resolve(__dirname, 'src/partials/header.html'), 'utf-8');
-      const footer     = readFileSync(resolve(__dirname, 'src/partials/footer.html'), 'utf-8');
-      const footerStone = readFileSync(resolve(__dirname, 'src/partials/footer-stone.html'), 'utf-8');
-      return html
-        .replace('<!--HEADER-->', header)
-        .replace('<!--FOOTER-->', footer)
-        .replace('<!--FOOTER_STONE-->', footerStone)
-        .replace(/%%SITE_URL%%/g, SITE_URL);
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        const manifest = readManifest();
+
+        const header      = readFileSync(resolve(__dirname, 'src/partials/header.html'), 'utf-8');
+        const footer      = readFileSync(resolve(__dirname, 'src/partials/footer.html'), 'utf-8');
+        const footerStone = readFileSync(resolve(__dirname, 'src/partials/footer-stone.html'), 'utf-8');
+
+        function srcset(name) {
+          const widths = manifest[name] || [800, 1600];
+          return widths.map(w => `/img/webp/${name}-${w}.webp ${w}w`).join(', ');
+        }
+
+        return html
+          .replace('<!--HEADER-->', header)
+          .replace('<!--FOOTER-->', footer)
+          .replace('<!--FOOTER_STONE-->', footerStone)
+          .replace(/%%SITE_URL%%/g, SITE_URL)
+          // Rewrite srcsets before Vite processes assets (post order sees __VITE_PUBLIC_ASSET__ hashes)
+          .replace(
+            /srcset="\/img\/webp\/([a-z0-9-]+)-\d+\.webp[^"]*"/g,
+            (_, name) => `srcset="${srcset(name)}"`
+          )
+          .replace(
+            /imagesrcset="\/img\/webp\/([a-z0-9-]+)-\d+\.webp[^"]*"/g,
+            (_, name) => `imagesrcset="${srcset(name)}"`
+          );
+      },
     },
   };
 }

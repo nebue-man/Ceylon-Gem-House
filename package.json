@@ -15,6 +15,10 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@capsizecss/metrics": "^4.4.0",
+    "@fontsource/instrument-sans": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "fontkit": "^2.0.4",
     "pngjs": "^7.0.0",
     "sharp": "^0.35.5",
     "vite": "^8.3.5"

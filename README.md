@@ -9,7 +9,7 @@ npm install
 npm run dev        # Vite dev server on http://localhost:5173
 ```
 
-Or open `index.html` directly in a browser (fonts load from Google Fonts CDN).
+Or open `index.html` directly in a browser (fonts are self-hosted in `public/fonts/`).
 
 ## Build
 
@@ -18,7 +18,7 @@ npm run build      # generates WebP images, then Vite builds to dist/
 npm run preview    # serve dist/ on http://localhost:4173
 ```
 
-The build output in `dist/` is a drop-in for any static host (Netlify, Vercel, S3, GitHub Pages).
+The build output in `dist/` is a drop-in for any static host (Netlify, Vercel, S3, GitHub Pages). See **Deploy** below.
 
 ## Swap images
 
@@ -34,7 +34,7 @@ Source images live in `public/img/` with fixed names:
 | `dop.jpg` | Origin step IV |
 | `box.jpg` | Origin step V |
 
-To swap: drop new JPEG or PNG files with the same names into `public/img/`, then run `npm run images` (or `npm run build`). The script always generates WebP variants at all three widths (800w, 1600w, 2400w). For sources smaller than a target width the variant is capped at source size — no upscaling. Drop in a ≥2400px source and the 2400w WebP will be a genuine high-res file. All `<picture>` srcsets reference all three widths automatically.
+To swap: drop new JPEG or PNG files with the same names into `public/img/`, then run `npm run images` (or `npm run build`). The script generates WebP variants only at widths ≤ the source width (800w, 1600w, 2400w). No upscaling — a 1600px source gets 800w and 1600w only; a ≥2400px source gets all three. Srcsets in the built HTML automatically match the generated widths.
 
 ## Site URL
 
@@ -66,6 +66,38 @@ Key ones:
 - `NGJA licence no. [NO.]` — NGJA licence in footer
 - `[email]` / `[phone]` / `[Street address]` — contact details in footer
 - `[24]` — reply-within hours on both pages
+
+## Deploy
+
+### Netlify
+
+1. Push to a GitHub/GitLab repo.
+2. In the Netlify UI: **Add new site → Import an existing project → pick your repo**.
+3. Build settings are auto-detected from `netlify.toml` (build command: `npm run build`, publish directory: `dist`).
+4. In **Site configuration → Environment variables** add `SITE_URL=https://your-actual-domain.com`.
+5. Trigger a deploy. Netlify serves the `dist/` output with automatic gzip/brotli and CDN caching.
+
+Or use the CLI:
+```bash
+npm install -g netlify-cli
+netlify init        # connects to your Netlify account and repo
+netlify deploy --prod
+```
+
+### Vercel
+
+```bash
+npm install -g vercel
+vercel              # follow prompts; override build command to `npm run build`, output dir to `dist`
+```
+
+Or via the Vercel UI: **Add new project → import repo → override output directory to `dist`**.
+
+Add `SITE_URL` as an environment variable in the project settings before the first production deploy.
+
+### Any static host (S3, GitHub Pages, etc.)
+
+Run `npm run build` locally (with `.env` set), then upload the `dist/` folder. No server-side processing is needed.
 
 ## QA artefacts (`qa/`)
 

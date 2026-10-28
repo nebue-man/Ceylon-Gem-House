@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readdir, mkdir } from 'fs/promises';
+import { readdir, mkdir, writeFile } from 'fs/promises';
 import { join, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -14,23 +14,29 @@ export async function generateImages() {
   await mkdir(OUT, { recursive: true });
   const files = (await readdir(SRC)).filter(f => /\.(jpe?g|png)$/i.test(f));
 
+  const manifest = {};
+
   await Promise.all(files.map(async file => {
     const name    = basename(file, extname(file));
     const { width: srcW } = await sharp(join(SRC, file)).metadata();
 
-    // Always generate all widths. Cap resize at source width (no upscaling) so
-    // the file always exists for srcset references. When the client drops in a
-    // ≥2400 px source, the 2400w variant is a genuine high-res file.
-    await Promise.all(WIDTHS.map(w =>
+    // Only generate widths that fit in the source — no upscaling
+    const targets = WIDTHS.filter(w => w <= srcW);
+
+    await Promise.all(targets.map(w =>
       sharp(join(SRC, file))
-        .resize(Math.min(w, srcW))
+        .resize(w)
         .webp({ quality: 82 })
         .toFile(join(OUT, `${name}-${w}.webp`))
     ));
 
-    const generated = WIDTHS.map(w => w <= srcW ? `${w}w` : `${w}w(→${srcW}w)`);
-    console.log(`[images] ${name}: ${generated.join(', ')} → WebP`);
+    manifest[name] = targets;
+    console.log(`[images] ${name}: ${targets.map(w => `${w}w`).join(', ')} → WebP`);
   }));
+
+  // Write manifest so vite.config can compute correct srcsets at build time
+  await writeFile(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2));
+  console.log('[images] manifest written');
 }
 
 // Direct execution: node scripts/gen-images.js
