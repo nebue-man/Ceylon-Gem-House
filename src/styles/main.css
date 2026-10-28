@@ -59,6 +59,40 @@ img {
   display: block;
 }
 
+/* Screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   SKIP LINK
+   ============================================================ */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 1rem;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: var(--bg-linen);
+  z-index: 10000;
+  border-radius: 0 0 4px 4px;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--bg-linen);
+  outline-offset: 2px;
+}
+
 /* ============================================================
    SITE WRAPPER
    ============================================================ */
@@ -229,6 +263,7 @@ img {
   }
   .badge { width: 40px; height: 40px; }
   .badge__ring { width: 40px; height: 40px; }
+  .badge__ring text { display: none; } /* 7.2px SVG text unreadable at 40px badge; decorative, aria-hidden */
   .main-nav { display: none; }
   .menu-btn { display: inline-flex; }
 }
@@ -1372,7 +1407,7 @@ select.field__input {
   display: block;
   margin: 12px 0 0;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   font-weight: 500;
   color: var(--ink-label);

@@ -4,8 +4,19 @@
 <meta charset="utf-8">
 <title>Ceylon Gem House — Home</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Blue sapphires and fine coloured gemstones from Sri Lanka, sold with the laboratory report, provenance record and NGJA export seal.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ceylon Gem House — Formed in Sri Lanka, recorded at every step">
+<meta property="og:description" content="Blue sapphires and fine coloured gemstones from Sri Lanka, sold with the laboratory report, provenance record and NGJA export seal.">
+<meta property="og:image" content="%%SITE_URL%%/img/sapphire.jpg">
+<meta property="og:url" content="%%SITE_URL%%/">
+<meta name="theme-color" content="#F2EDE4">
+<link rel="canonical" href="%%SITE_URL%%/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" as="style">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"></noscript>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/src/styles/main.css">
@@ -13,6 +24,7 @@
 </head>
 <body>
 <div class="site">
+<a href="#top" class="skip-link">Skip to main content</a>
 
 <!--HEADER-->
 
@@ -29,15 +41,21 @@
 <a href="#origin" class="btn-outline">Follow the origin</a>
 </div>
 </div>
-<figure class="hero__figure" data-reveal>
-<img src="/img/sapphire.jpg" alt="A polished oval blue sapphire on dark stone">
+<figure class="hero__figure">
+<picture>
+  <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 50vw">
+  <img src="/img/sapphire.jpg" alt="A polished oval blue sapphire on dark stone" width="1600" height="900">
+</picture>
 <figcaption class="hero__caption"><span>Blue sapphire, oval</span><span>AI concept image</span></figcaption>
 </figure>
 </section>
 
 <!-- Landscape band -->
 <section aria-label="Ratnapura landscape" class="landscape">
-<img src="/img/paddy.jpg" alt="Paddy fields at dawn above a gem pit near Ratnapura">
+<picture>
+  <source type="image/webp" srcset="/img/webp/paddy-800.webp 800w, /img/webp/paddy-1600.webp 1600w, /img/webp/paddy-2400.webp 2400w" sizes="100vw">
+  <img src="/img/paddy.jpg" alt="Paddy fields at dawn above a gem pit near Ratnapura" width="1600" height="900" loading="lazy">
+</picture>
 <div class="landscape__caption"><span>Paddy land above the illam, Sabaragamuwa</span><span>AI concept image</span></div>
 </section>
 
@@ -80,17 +98,18 @@
 
   <!-- Desktop: pinned scroll experience (JS + ≥900px + no reduced-motion) -->
   <div class="origin-pin" aria-label="From the gravel to your hand, in five steps">
+  <h2 class="sr-only">From the gravel to your hand, in five steps</h2>
 
     <!-- Scroll travel — 5 × 100vh; stage sticks inside -->
     <div class="origin-stage">
 
       <!-- Full-bleed images -->
       <div class="origin-imgs" aria-hidden="true">
-        <img class="origin-img" data-img="0" src="/img/pit.jpg"   alt="">
-        <img class="origin-img" data-img="1" src="/img/river.jpg" alt="">
-        <img class="origin-img" data-img="2" src="/img/find.jpg"  alt="">
-        <img class="origin-img" data-img="3" src="/img/dop.jpg"   alt="">
-        <img class="origin-img" data-img="4" src="/img/box.jpg"   alt="">
+        <picture><source type="image/webp" srcset="/img/webp/pit-800.webp 800w, /img/webp/pit-1600.webp 1600w, /img/webp/pit-2400.webp 2400w" sizes="100vw"><img class="origin-img" data-img="0" src="/img/pit.jpg"   alt="" width="1600" height="900" loading="lazy"></picture>
+        <picture><source type="image/webp" srcset="/img/webp/river-800.webp 800w, /img/webp/river-1600.webp 1600w, /img/webp/river-2400.webp 2400w" sizes="100vw"><img class="origin-img" data-img="1" src="/img/river.jpg" alt="" width="1600" height="900" loading="lazy"></picture>
+        <picture><source type="image/webp" srcset="/img/webp/find-800.webp 800w, /img/webp/find-1600.webp 1600w, /img/webp/find-2400.webp 2400w" sizes="100vw"><img class="origin-img" data-img="2" src="/img/find.jpg"  alt="" width="1600" height="900" loading="lazy"></picture>
+        <picture><source type="image/webp" srcset="/img/webp/dop-800.webp 800w, /img/webp/dop-1600.webp 1600w, /img/webp/dop-2400.webp 2400w" sizes="100vw"><img class="origin-img" data-img="3" src="/img/dop.jpg"   alt="" width="1600" height="900" loading="lazy"></picture>
+        <picture><source type="image/webp" srcset="/img/webp/box-800.webp 800w, /img/webp/box-1600.webp 1600w, /img/webp/box-2400.webp 2400w" sizes="100vw"><img class="origin-img" data-img="4" src="/img/box.jpg"   alt="" width="1600" height="900" loading="lazy"></picture>
       </div>
 
       <!-- Targeted overlay behind left nav -->
@@ -150,31 +169,31 @@
   </div>
   <div class="origin__grid">
   <article class="origin-card" data-reveal>
-  <img src="/img/pit.jpg" alt="A woven basket of gem gravel raised from a timber-braced pit">
+  <picture><source type="image/webp" srcset="/img/webp/pit-800.webp 800w, /img/webp/pit-1600.webp 1600w, /img/webp/pit-2400.webp 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"><img src="/img/pit.jpg" alt="A woven basket of gem gravel raised from a timber-braced pit" width="1600" height="900" loading="lazy"></picture>
   <p class="origin-card__step">I · THE PIT</p>
   <h3 class="origin-card__heading">Raised from the illam</h3>
   <p class="origin-card__body">Timber-braced pits, five to twenty-five metres deep. The gem gravel comes up by hand, and the land is filled back in when the work ends.</p>
   </article>
   <article class="origin-card" data-reveal>
-  <img src="/img/river.jpg" alt="Hands washing gravel in a woven basket in a shallow river">
+  <picture><source type="image/webp" srcset="/img/webp/river-800.webp 800w, /img/webp/river-1600.webp 1600w, /img/webp/river-2400.webp 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"><img src="/img/river.jpg" alt="Hands washing gravel in a woven basket in a shallow river" width="1600" height="900" loading="lazy"></picture>
   <p class="origin-card__step">II · THE RIVER</p>
   <h3 class="origin-card__heading">Washed in woven baskets</h3>
   <p class="origin-card__body">Swirled in running water until the clay is gone. What stays behind is read by eye, one pebble at a time.</p>
   </article>
   <article class="origin-card" data-reveal>
-  <img src="/img/find.jpg" alt="A rough blue sapphire crystal held in an open palm above the washing basket">
+  <picture><source type="image/webp" srcset="/img/webp/find-800.webp 800w, /img/webp/find-1600.webp 1600w, /img/webp/find-2400.webp 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"><img src="/img/find.jpg" alt="A rough blue sapphire crystal held in an open palm above the washing basket" width="1600" height="900" loading="lazy"></picture>
   <p class="origin-card__step">III · THE FIND</p>
   <h3 class="origin-card__heading">A frosted blue crystal</h3>
   <p class="origin-card__body">Proceeds are shared among landowner, licence holder, pump owner, investors and miners, as they have been for generations.</p>
   </article>
   <article class="origin-card" data-reveal>
-  <img src="/img/dop.jpg" alt="A faceted sapphire held on a brass dop stick">
+  <picture><source type="image/webp" srcset="/img/webp/dop-800.webp 800w, /img/webp/dop-1600.webp 1600w, /img/webp/dop-2400.webp 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"><img src="/img/dop.jpg" alt="A faceted sapphire held on a brass dop stick" width="1600" height="900" loading="lazy"></picture>
   <p class="origin-card__step">IV · THE CUT</p>
   <h3 class="origin-card__heading">Shaped by hand</h3>
   <p class="origin-card__body">Each facet is planned to keep the colour deep and the weight honest. Calibrated work is cut to a tenth of a millimetre.</p>
   </article>
   <article class="origin-card" data-reveal>
-  <img src="/img/box.jpg" alt="A white and gold presentation box">
+  <picture><source type="image/webp" srcset="/img/webp/box-800.webp 800w, /img/webp/box-1600.webp 1600w, /img/webp/box-2400.webp 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"><img src="/img/box.jpg" alt="A white and gold presentation box" width="1600" height="900" loading="lazy"></picture>
   <p class="origin-card__step">V · THE SEAL</p>
   <h3 class="origin-card__heading">Examined and sealed</h3>
   <p class="origin-card__body">At export, a state valuer and a Customs appraiser examine the parcel, and it is sealed in wax by three parties.</p>
@@ -195,7 +214,10 @@
 <!-- Featured stone -->
 <section aria-label="Featured stone" class="featured" data-theme="dark">
 <div class="featured__inner">
-<img src="/img/sapphire.jpg" alt="Featured blue sapphire, oval cut" class="featured__img">
+<picture>
+  <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 50vw">
+  <img src="/img/sapphire.jpg" alt="Featured blue sapphire, oval cut" class="featured__img" width="1600" height="900" loading="lazy">
+</picture>
 <div class="featured__details">
 <p class="featured__eyebrow">NEW THIS MONTH</p>
 <h2 class="featured__heading">Blue sapphire, oval, [X.XX] ct</h2>

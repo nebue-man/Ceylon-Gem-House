@@ -4,8 +4,20 @@
 <meta charset="utf-8">
 <title>Ceylon Gem House — Stone page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Blue sapphire, oval cut. Laboratory report, provenance record, and five-light media documentation from Ceylon Gem House.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blue sapphire, oval — Ceylon Gem House">
+<meta property="og:description" content="Laboratory report, provenance record, and full media documentation from Ceylon Gem House.">
+<meta property="og:image" content="%%SITE_URL%%/img/sapphire.jpg">
+<meta property="og:url" content="%%SITE_URL%%/stone.html">
+<meta name="theme-color" content="#F2EDE4">
+<link rel="canonical" href="%%SITE_URL%%/stone.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" as="style">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"></noscript>
+<link rel="preload" as="image" href="/img/webp/sapphire-800.webp" imagesrcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" imagesizes="(max-width: 900px) 100vw, 58vw">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/src/styles/main.css">
@@ -13,12 +25,13 @@
 </head>
 <body>
 <div class="site">
+<a href="#stone" class="skip-link">Skip to main content</a>
 
 <!--HEADER-->
 
 <div class="breadcrumb"><a href="index.html">Home</a> / <a href="#">Blue sapphires</a> / Lot [CGH-0001]</div>
 
-<section class="stone">
+<section class="stone" id="stone">
 
   <!-- Left: media column (scrolls) -->
   <div class="stone__media-col">
@@ -32,23 +45,32 @@
       <button class="lighting-btn" data-target="stone-frame-4">With colour card</button>
     </nav>
 
-    <figure class="stone__frame" id="stone-frame-0" data-reveal>
+    <figure class="stone__frame" id="stone-frame-0">
       <div class="stone__img-wrap">
-        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in daylight-balanced studio light">
+        <picture>
+        <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 58vw">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in daylight-balanced studio light" width="1600" height="900">
+      </picture>
       </div>
       <figcaption class="stone__frame-label">Daylight</figcaption>
     </figure>
 
     <figure class="stone__frame" id="stone-frame-1" data-reveal>
       <div class="stone__img-wrap">
-        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in warm light" loading="lazy">
+        <picture>
+        <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 58vw">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, in warm light" width="1600" height="900" loading="lazy">
+      </picture>
       </div>
       <figcaption class="stone__frame-label">Warm light</figcaption>
     </figure>
 
     <figure class="stone__frame" id="stone-frame-2" data-reveal>
       <div class="stone__img-wrap">
-        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, under LED" loading="lazy">
+        <picture>
+        <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 58vw">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, under LED" width="1600" height="900" loading="lazy">
+      </picture>
       </div>
       <figcaption class="stone__frame-label">LED</figcaption>
     </figure>
@@ -68,7 +90,10 @@
 
     <figure class="stone__frame" id="stone-frame-4" data-reveal>
       <div class="stone__img-wrap">
-        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, with colour card" loading="lazy">
+        <picture>
+        <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 58vw">
+        <img src="/img/sapphire.jpg" alt="Blue sapphire, oval, with colour card" width="1600" height="900" loading="lazy">
+      </picture>
       </div>
       <figcaption class="stone__frame-label">With colour card</figcaption>
     </figure>
