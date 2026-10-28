@@ -1,0 +1,18 @@
+{
+  "name": "ceylon-gem-house-site-2",
+  "version": "1.0.0",
+  "description": "Static HTML concept (home + stone page). Open `index.html` in a browser, or run `npx serve .`. See `CLAUDE.md` for the design system, copy rules and next steps.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "vite": "^8.3.5"
+  }
+}
