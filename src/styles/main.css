@@ -8,7 +8,8 @@
   --bg-trade: #E7DFD2;
 
   /* Dark sections (featured stone + footer) */
-  --bg-dark: #0F1A33;
+  --navy: #0F1A33;
+  --bg-dark: var(--navy);
 
   /* Ink (text) */
   --ink: #1A1916;
@@ -74,13 +75,15 @@ img {
    HEADER
    ============================================================ */
 
-/* Fixed header */
+/* Fixed header — height is the single source of truth for --header-h */
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
+  height: var(--header-h);
+  box-sizing: border-box;
   background: transparent;
   border-bottom: 1px solid transparent;
   transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
@@ -115,12 +118,13 @@ img {
 .site-header__inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 22px var(--page-x);
+  padding: 0 var(--page-x);
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px 40px;
+  gap: 0 40px;
 }
 
 .logo {
@@ -545,9 +549,206 @@ img {
 }
 
 /* ============================================================
-   ORIGIN
+   ORIGIN — section wrapper
    ============================================================ */
 .origin {
+  /* dark bg for fallback; pin inherits its own bg */
+  background: var(--navy);
+}
+
+/* ============================================================
+   ORIGIN — PINNED EXPERIENCE (desktop ≥900px, JS, no reduced-motion)
+   ============================================================ */
+
+/* Default: show fallback, hide pin */
+.origin-pin     { display: none; }
+.origin-fallback { display: block; }
+
+/* JS + wide viewport: activate pin */
+@media (min-width: 900px) {
+  html.js .origin-pin      { display: block; }
+  html.js .origin-fallback { display: none;  }
+}
+
+/* Reduced motion always uses fallback */
+@media (prefers-reduced-motion: reduce) {
+  .origin-pin      { display: none  !important; }
+  .origin-fallback { display: block !important; }
+}
+
+/* Pin: 5 steps × 100vh of scroll travel */
+.origin-pin {
+  height: calc(5 * 100vh);
+  position: relative;
+}
+
+/* Sticky stage — fills viewport, clipped */
+.origin-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--navy);
+  color: var(--dark-text);
+}
+
+/* Images — full-bleed, stacked */
+.origin-imgs {
+  position: absolute;
+  inset: 0;
+}
+
+.origin-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1.2s var(--ease-out), transform 1.6s var(--ease-out);
+}
+
+.origin-img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Targeted overlays — only where text sits, not a full-page wash */
+.origin-overlay-left {
+  position: absolute;
+  inset: 0 50% 0 0;        /* left half only */
+  background: linear-gradient(to right, rgba(15,26,51,0.82) 0%, rgba(15,26,51,0.52) 70%, transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.origin-overlay-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 44%;
+  height: 65%;
+  background: linear-gradient(135deg, transparent 0%, rgba(15,26,51,0.72) 60%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Left index nav */
+.origin-index {
+  position: absolute;
+  left: var(--page-x);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.origin-index__btn {
+  font: inherit;
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 5.2vw, 84px);
+  font-weight: 400;
+  line-height: 1.05;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  color: var(--dark-text);
+  opacity: 0.35;
+  transition: opacity 0.4s var(--ease-out);
+  text-align: left;
+}
+
+.origin-index__btn.is-active { opacity: 1; }
+.origin-index__btn:hover:not(.is-active) { opacity: 0.65; }
+.origin-index__btn:focus-visible {
+  outline: 2px solid rgba(238, 233, 223, 0.9);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+/* Bottom-right info panel */
+.origin-info {
+  position: absolute;
+  right: var(--page-x);
+  bottom: 52px;
+  z-index: 2;
+  width: min(400px, 36vw);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.origin-counter {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--dark-label);
+}
+
+/* Panels overlap in a grid cell so they crossfade */
+.origin-panels {
+  display: grid;
+}
+
+.origin-panel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.origin-panel.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.origin-panel__heading {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.1;
+  color: var(--dark-text);
+}
+
+.origin-panel__body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dark-label);
+}
+
+/* Progress line */
+.origin-progress-wrap {
+  height: 1px;
+  background: rgba(238,233,223,0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.origin-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: var(--dark-text);
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+}
+
+.origin-img-caption {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(169,177,196,0.7);
+}
+
+/* ============================================================
+   ORIGIN — FALLBACK (mobile / reduced-motion stacked cards)
+   ============================================================ */
+.origin-fallback {
   background: var(--bg-panel);
   border-top: 1px solid var(--ink-hairline);
   border-bottom: 1px solid var(--ink-hairline);
@@ -577,9 +778,7 @@ img {
   max-width: 640px;
 }
 
-.origin__heading em {
-  font-style: italic;
-}
+.origin__heading em { font-style: italic; }
 
 .origin__intro {
   margin: 0;
@@ -623,31 +822,6 @@ img {
 .origin-card__body {
   margin: 0;
   color: var(--ink-secondary);
-}
-
-/* Origin note (dark aside — intentionally stays ink, not navy) */
-.origin-note {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 20px;
-  padding: 32px;
-  background: var(--ink);
-  color: var(--bg-linen);
-}
-
-.origin-note__label {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.24em;
-  color: #B9B2A5;
-}
-
-.origin-note__text {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 26px;
-  line-height: 1.25;
 }
 
 /* ============================================================
@@ -1141,7 +1315,7 @@ select.field__input {
 }
 
 .stone__img-wrap {
-  background: #11141B;
+  background: var(--navy);
 }
 
 .stone__img-wrap img {

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/src/styles/main.css">
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -76,50 +76,113 @@
 </div>
 
 <!-- Origin -->
-<section id="origin" class="origin">
-<div class="origin__inner">
-<div class="origin__header" data-rg>
-<h2 class="origin__heading" data-ri>From the gravel to your hand, <em>in five steps.</em></h2>
-<p class="origin__intro" data-ri>Every stone we offer passes through the same hands and the same record. Nothing is skipped and nothing is told that cannot be checked.</p>
-</div>
+<section id="origin" class="origin" data-theme="dark">
 
-<div class="origin__grid">
-<article class="origin-card" data-reveal>
-<img src="/img/pit.jpg" alt="A woven basket of gem gravel raised from a timber-braced pit">
-<p class="origin-card__step">I · THE PIT</p>
-<h3 class="origin-card__heading">Raised from the illam</h3>
-<p class="origin-card__body">Timber-braced pits, five to twenty-five metres deep. The gem gravel comes up by hand, and the land is filled back in when the work ends.</p>
-</article>
-<article class="origin-card" data-reveal>
-<img src="/img/river.jpg" alt="Hands washing gravel in a woven basket in a shallow river">
-<p class="origin-card__step">II · THE RIVER</p>
-<h3 class="origin-card__heading">Washed in woven baskets</h3>
-<p class="origin-card__body">Swirled in running water until the clay is gone. What stays behind is read by eye, one pebble at a time.</p>
-</article>
-<article class="origin-card" data-reveal>
-<img src="/img/find.jpg" alt="A rough blue sapphire crystal held in an open palm above the washing basket">
-<p class="origin-card__step">III · THE FIND</p>
-<h3 class="origin-card__heading">A frosted blue crystal</h3>
-<p class="origin-card__body">Proceeds are shared among landowner, licence holder, pump owner, investors and miners, as they have been for generations.</p>
-</article>
-<article class="origin-card" data-reveal>
-<img src="/img/dop.jpg" alt="A faceted sapphire held on a brass dop stick">
-<p class="origin-card__step">IV · THE CUT</p>
-<h3 class="origin-card__heading">Shaped by hand</h3>
-<p class="origin-card__body">Each facet is planned to keep the colour deep and the weight honest. Calibrated work is cut to a tenth of a millimetre.</p>
-</article>
-<article class="origin-card" data-reveal>
-<img src="/img/box.jpg" alt="A white and gold presentation box">
-<p class="origin-card__step">V · THE SEAL</p>
-<h3 class="origin-card__heading">Examined and sealed</h3>
-<p class="origin-card__body">At export, a state valuer and a Customs appraiser examine the parcel, and it is sealed in wax by three parties.</p>
-</article>
-<aside class="origin-note" data-reveal>
-<p class="origin-note__label">A NOTE ON THE IMAGES</p>
-<p class="origin-note__text">These scenes are AI concept images. The live site will show our own pits, cutters and stones, photographed as they are.</p>
-</aside>
-</div>
-</div>
+  <!-- Desktop: pinned scroll experience (JS + ≥900px + no reduced-motion) -->
+  <div class="origin-pin" aria-label="From the gravel to your hand, in five steps">
+
+    <!-- Scroll travel — 5 × 100vh; stage sticks inside -->
+    <div class="origin-stage">
+
+      <!-- Full-bleed images -->
+      <div class="origin-imgs" aria-hidden="true">
+        <img class="origin-img" data-img="0" src="/img/pit.jpg"   alt="">
+        <img class="origin-img" data-img="1" src="/img/river.jpg" alt="">
+        <img class="origin-img" data-img="2" src="/img/find.jpg"  alt="">
+        <img class="origin-img" data-img="3" src="/img/dop.jpg"   alt="">
+        <img class="origin-img" data-img="4" src="/img/box.jpg"   alt="">
+      </div>
+
+      <!-- Targeted overlay behind left nav -->
+      <div class="origin-overlay-left"  aria-hidden="true"></div>
+      <!-- Targeted overlay behind bottom-right info -->
+      <div class="origin-overlay-right" aria-hidden="true"></div>
+
+      <!-- Left: index nav -->
+      <nav class="origin-index" aria-label="Origin steps">
+        <button class="origin-index__btn" data-step="0">The pit</button>
+        <button class="origin-index__btn" data-step="1">The river</button>
+        <button class="origin-index__btn" data-step="2">The find</button>
+        <button class="origin-index__btn" data-step="3">The cut</button>
+        <button class="origin-index__btn" data-step="4">The seal</button>
+      </nav>
+
+      <!-- Bottom-right: counter + step copy + progress + caption -->
+      <div class="origin-info">
+        <p class="origin-counter" aria-live="polite" aria-atomic="true">01 / 05</p>
+        <div class="origin-panels">
+          <div class="origin-panel" data-panel="0">
+            <h3 class="origin-panel__heading">Raised from the illam</h3>
+            <p class="origin-panel__body">Timber-braced pits, five to twenty-five metres deep. The gem gravel comes up by hand, and the land is filled back in when the work ends.</p>
+          </div>
+          <div class="origin-panel" data-panel="1">
+            <h3 class="origin-panel__heading">Washed in woven baskets</h3>
+            <p class="origin-panel__body">Swirled in running water until the clay is gone. What stays behind is read by eye, one pebble at a time.</p>
+          </div>
+          <div class="origin-panel" data-panel="2">
+            <h3 class="origin-panel__heading">A frosted blue crystal</h3>
+            <p class="origin-panel__body">Proceeds are shared among landowner, licence holder, pump owner, investors and miners, as they have been for generations.</p>
+          </div>
+          <div class="origin-panel" data-panel="3">
+            <h3 class="origin-panel__heading">Shaped by hand</h3>
+            <p class="origin-panel__body">Each facet is planned to keep the colour deep and the weight honest. Calibrated work is cut to a tenth of a millimetre.</p>
+          </div>
+          <div class="origin-panel" data-panel="4">
+            <h3 class="origin-panel__heading">Examined and sealed</h3>
+            <p class="origin-panel__body">At export, a state valuer and a Customs appraiser examine the parcel, and it is sealed in wax by three parties.</p>
+          </div>
+        </div>
+        <div class="origin-progress-wrap" aria-hidden="true">
+          <div class="origin-progress-bar"></div>
+        </div>
+        <p class="origin-img-caption">AI concept image · Five steps, documented as they happen</p>
+      </div>
+
+    </div><!-- /.origin-stage -->
+  </div><!-- /.origin-pin -->
+
+  <!-- Mobile / reduced-motion fallback: stacked cards -->
+  <div class="origin-fallback">
+  <div class="origin__inner">
+  <div class="origin__header" data-rg>
+  <h2 class="origin__heading" data-ri>From the gravel to your hand, <em>in five steps.</em></h2>
+  <p class="origin__intro" data-ri>Every stone we offer passes through the same hands and the same record. Nothing is skipped and nothing is told that cannot be checked.</p>
+  </div>
+  <div class="origin__grid">
+  <article class="origin-card" data-reveal>
+  <img src="/img/pit.jpg" alt="A woven basket of gem gravel raised from a timber-braced pit">
+  <p class="origin-card__step">I · THE PIT</p>
+  <h3 class="origin-card__heading">Raised from the illam</h3>
+  <p class="origin-card__body">Timber-braced pits, five to twenty-five metres deep. The gem gravel comes up by hand, and the land is filled back in when the work ends.</p>
+  </article>
+  <article class="origin-card" data-reveal>
+  <img src="/img/river.jpg" alt="Hands washing gravel in a woven basket in a shallow river">
+  <p class="origin-card__step">II · THE RIVER</p>
+  <h3 class="origin-card__heading">Washed in woven baskets</h3>
+  <p class="origin-card__body">Swirled in running water until the clay is gone. What stays behind is read by eye, one pebble at a time.</p>
+  </article>
+  <article class="origin-card" data-reveal>
+  <img src="/img/find.jpg" alt="A rough blue sapphire crystal held in an open palm above the washing basket">
+  <p class="origin-card__step">III · THE FIND</p>
+  <h3 class="origin-card__heading">A frosted blue crystal</h3>
+  <p class="origin-card__body">Proceeds are shared among landowner, licence holder, pump owner, investors and miners, as they have been for generations.</p>
+  </article>
+  <article class="origin-card" data-reveal>
+  <img src="/img/dop.jpg" alt="A faceted sapphire held on a brass dop stick">
+  <p class="origin-card__step">IV · THE CUT</p>
+  <h3 class="origin-card__heading">Shaped by hand</h3>
+  <p class="origin-card__body">Each facet is planned to keep the colour deep and the weight honest. Calibrated work is cut to a tenth of a millimetre.</p>
+  </article>
+  <article class="origin-card" data-reveal>
+  <img src="/img/box.jpg" alt="A white and gold presentation box">
+  <p class="origin-card__step">V · THE SEAL</p>
+  <h3 class="origin-card__heading">Examined and sealed</h3>
+  <p class="origin-card__body">At export, a state valuer and a Customs appraiser examine the parcel, and it is sealed in wax by three parties.</p>
+  </article>
+  </div>
+  </div>
+  </div><!-- /.origin-fallback -->
+
 </section>
 
 <!-- Quote -->

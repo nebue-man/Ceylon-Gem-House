@@ -12,17 +12,12 @@ const reduced = mq.motion.matches;
 // ─── Header refs ────────────────────────────────────────────────────
 const header = document.querySelector('.site-header');
 
-// Set --header-h CSS variable from measured height
-function measureHeader() {
-  const h = header.offsetHeight;
-  document.documentElement.style.setProperty('--header-h', h + 'px');
-}
-measureHeader();
-window.addEventListener('resize', measureHeader, { passive: true });
-
 // ─── Header scroll state ────────────────────────────────────────────
+let updateOriginPin = null; // set by origin-pin init below
+
 function onScroll(y) {
   header.classList.toggle('site-header--scrolled', y > 40);
+  if (updateOriginPin) updateOriginPin(y);
 }
 
 // ─── Header dark-section detection (IntersectionObserver) ───────────
@@ -62,6 +57,7 @@ let lenis = null;
 
 if (!reduced && mq.pointer.matches) {
   lenis = new Lenis({ lerp: 0.1 });
+  window.__lenis = lenis;
 
   lenis.on('scroll', ({ scroll }) => onScroll(scroll));
 
@@ -176,3 +172,72 @@ if (!reduced) {
   document.querySelectorAll('[data-reveal]').forEach(el => revealIO.observe(el));
   document.querySelectorAll('[data-rg]').forEach(el => groupIO.observe(el));
 }
+
+// ─── Origin pinned experience ────────────────────────────────────────
+(function () {
+  const pin = document.querySelector('.origin-pin');
+  if (!pin || reduced) return;
+
+  const imgs    = [...pin.querySelectorAll('.origin-img')];
+  const btns    = [...pin.querySelectorAll('.origin-index__btn')];
+  const panels  = [...pin.querySelectorAll('.origin-panel')];
+  const counter = pin.querySelector('.origin-counter');
+  const bar     = pin.querySelector('.origin-progress-bar');
+  const STEPS   = 5;
+  const LABELS  = ['01 / 05', '02 / 05', '03 / 05', '04 / 05', '05 / 05'];
+  let currentStep = -1;
+
+  function applyStep(step, intra) {
+    if (step !== currentStep) {
+      imgs.forEach((el, i)   => el.classList.toggle('is-active', i === step));
+      btns.forEach((el, i)   => el.classList.toggle('is-active', i === step));
+      panels.forEach((el, i) => el.classList.toggle('is-active', i === step));
+      if (counter) counter.textContent = LABELS[step];
+      currentStep = step;
+    }
+    if (bar) bar.style.transform = `scaleX(${intra})`;
+  }
+
+  updateOriginPin = function (scrollY) {
+    if (window.innerWidth < 900) return;
+    const viewH    = window.innerHeight;
+    const pinTop   = pin.offsetTop;
+    const pinH     = pin.offsetHeight;
+    const scrollable = pinH - viewH;
+    if (scrollable <= 0) return;
+
+    const raw      = Math.max(0, Math.min(1, (scrollY - pinTop) / scrollable));
+    const rawStep  = raw * STEPS;
+    const step     = Math.min(STEPS - 1, Math.floor(rawStep));
+    const intra    = Math.min(1, rawStep - step);
+    applyStep(step, intra);
+  };
+
+  // Button clicks → scroll to that step's start
+  btns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const viewH    = window.innerHeight;
+      const pinTop   = pin.offsetTop;
+      const scrollable = pin.offsetHeight - viewH;
+      const targetY  = pinTop + scrollable * ((i + 0.05) / STEPS);
+      if (lenis) { lenis.scrollTo(targetY, { duration: 1.2 }); }
+      else { window.scrollTo({ top: targetY, behavior: 'smooth' }); }
+    });
+  });
+
+  // Preload all 5 images when section is ~2 viewports away
+  const preloadIO = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    imgs.forEach(img => {
+      const link = Object.assign(document.createElement('link'), {
+        rel: 'preload', as: 'image', href: img.src,
+      });
+      document.head.appendChild(link);
+    });
+    preloadIO.disconnect();
+  }, { rootMargin: '200% 0px' });
+  preloadIO.observe(pin);
+
+  // Initialise from current scroll (e.g. page loaded mid-section)
+  updateOriginPin(window.scrollY);
+}());
