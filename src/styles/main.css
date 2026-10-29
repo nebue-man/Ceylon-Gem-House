@@ -99,9 +99,12 @@
   --max-w: 1280px;
   --page-x: 32px;
 
-  /* Motion */
-  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
-  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+  /* Motion — mirrored from GSAP CustomEase names in main.js */
+  --ease-out:   cubic-bezier(0.25, 1,    0.5,  1);   /* revealOut  */
+  --ease-inout: cubic-bezier(0.75, 0,    0.25, 1);   /* revealInOut */
+  --ease-in:    cubic-bezier(0.5,  0,    0.75, 0);   /* revealIn   */
+  --ease:       cubic-bezier(0.25, 0.1,  0.25, 1);   /* revealEase */
+  --ease-dive:  cubic-bezier(0.6,  0,    0,    1);   /* diveIn     */
   --header-h: 108px;
 }
 
@@ -1733,31 +1736,51 @@ select.field__input {
    SCROLL REVEALS
    ============================================================ */
 
-/* Scroll reveals — only when JS loaded */
-html.js [data-reveal] {
+/* Scroll reveals — GSAP drives all animation; CSS only sets the initial hidden state.
+   No CSS transitions here — removing them prevents conflicts with GSAP tweens. */
+html.js [data-reveal],
+html.js [data-rg] [data-ri] {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
-html.js [data-reveal].is-in {
-  opacity: 1;
-  transform: none;
-}
-/* Staggered children inside a reveal group */
-html.js [data-rg] > [data-ri] {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-}
-html.js [data-rg] > [data-ri].is-in {
-  opacity: 1;
-  transform: none;
+html.js [data-split="hr"] {
+  clip-path: inset(0 100% 0 0);
 }
 @media (prefers-reduced-motion: reduce) {
   html.js [data-reveal],
-  html.js [data-rg] > [data-ri] {
+  html.js [data-rg] [data-ri] {
     opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
   }
+  html.js [data-split="hr"] {
+    clip-path: inset(0 0% 0 0) !important;
+  }
+}
+
+/* Hairline elements — used in place of CSS borders when JS is active */
+.hairline {
+  height: 1px;
+  background: var(--ink-hairline);
+}
+.hairline--ink {
+  background: var(--ink);
+}
+html.js .record__steps { border-top: none; }
+html.js .record__step  { border-bottom: none; }
+
+/* Accent lines extracted from headings */
+.record__accent {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1;
+  margin: 0;
+}
+.stone__heading-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(44px, 4.8vw, 64px);
+  line-height: 1;
+  margin: 0;
 }

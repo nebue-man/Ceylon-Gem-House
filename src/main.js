@@ -1,4 +1,19 @@
 import Lenis from 'lenis';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { CustomEase } from 'gsap/CustomEase';
+
+gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
+
+// Custom eases — also mirrored as CSS variables in main.css
+CustomEase.create('revealOut',   '0.25, 1, 0.5, 1');
+CustomEase.create('revealInOut', '0.75, 0, 0.25, 1');
+CustomEase.create('revealIn',    '0.5, 0, 0.75, 0');
+CustomEase.create('revealEase',  '0.25, 0.1, 0.25, 1');
+CustomEase.create('diveIn',      '0.6, 0, 0, 1');
+
+gsap.ticker.lagSmoothing(0);
 
 // Progressive enhancement flag
 document.documentElement.classList.add('js');
@@ -13,7 +28,7 @@ const reduced = mq.motion.matches;
 const header = document.querySelector('.site-header');
 
 // ─── Header scroll state ────────────────────────────────────────────
-let updateOriginPin = null; // set by origin-pin init below
+let updateOriginPin = null;
 
 function onScroll(y) {
   header.classList.toggle('site-header--scrolled', y > 40);
@@ -27,7 +42,6 @@ if (darkSections.length) {
   const updateDark = () =>
     header.classList.toggle('site-header--dark', activeDark.size > 0);
 
-  // Fire when a dark section enters the strip from y=0 to y=headerH
   function makeDarkIO() {
     const h = header.offsetHeight;
     const margin = Math.max(0, window.innerHeight - h);
@@ -42,7 +56,6 @@ if (darkSections.length) {
   let darkIO = makeDarkIO();
   darkSections.forEach(s => darkIO.observe(s));
 
-  // Rebuild IO on resize since viewport height changes
   window.addEventListener('resize', () => {
     darkIO.disconnect();
     activeDark.clear();
@@ -52,7 +65,7 @@ if (darkSections.length) {
   }, { passive: true });
 }
 
-// ─── Smooth scroll (desktop + no reduced-motion only) ───────────────
+// ─── Smooth scroll — one loop: GSAP ticker drives Lenis ─────────────
 let lenis = null;
 
 if (!reduced && mq.pointer.matches) {
@@ -60,16 +73,12 @@ if (!reduced && mq.pointer.matches) {
   window.__lenis = lenis;
 
   lenis.on('scroll', ({ scroll }) => onScroll(scroll));
+  lenis.on('scroll', ScrollTrigger.update);
 
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
+  // gsap.ticker time is seconds; lenis.raf expects ms
+  gsap.ticker.add((time) => { lenis.raf(time * 1000); });
 } else {
-  // Native scroll fallback: update header scroll state
   window.addEventListener('scroll', () => onScroll(window.scrollY), { passive: true });
-  // Initial call in case page is loaded mid-scroll
   onScroll(window.scrollY);
 }
 
@@ -144,33 +153,200 @@ if (menuBtn && navOverlay) {
   });
 }
 
-// ─── Scroll reveals ──────────────────────────────────────────────────
-if (!reduced) {
-  const STAGGER = 70; // ms between items
+// ─── Scroll reveals (SplitText library) ─────────────────────────────
+// Line-split elements tracked for resize re-split
+const _lineSplits = []; // { el, splitRef: { current }, state: { revealed } }
 
-  // Single-element reveals
-  const revealIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      e.target.classList.add('is-in');
-      revealIO.unobserve(e.target);
+// Dispatch by data-split attribute — opt-in, no implicit tag detection.
+// 'chars'  → serif display heads (rotateY flip)
+// 'accent' → italic serif accents (rotateX + x-slide)
+// 'lines'  → masked line reveal (blockquotes, long serif lines)
+// 'hr'     → clip-path hairline wipe
+// (none)   → simple fade-up
+function _revealType(el) {
+  const s = el.dataset.split;
+  if (s === 'chars')  return 'chars';
+  if (s === 'accent') return 'accent';
+  if (s === 'lines')  return 'lines';
+  if (s === 'hr')     return 'hr';
+  return 'fade';
+}
+
+// Setup: char flip for large serif display headings
+function _setupChars(el) {
+  const split = new SplitText(el, { type: 'chars,words' });
+  gsap.set(el, { opacity: 1 });
+  gsap.set(split.chars, {
+    transformPerspective: 800,
+    opacity: 0,
+    yPercent: 50,
+    rotateY: 90,
+  });
+  return { type: 'chars', split };
+}
+
+// Setup: italic accent chars from rotateX 90° + x offset, pivot bottom.
+// aria:'none' — <em> (emphasis) and <p> (paragraph) roles prohibit aria-label;
+// screen readers still read sequentially through the unsuppressed char spans.
+function _setupAccent(el) {
+  const split = new SplitText(el, { type: 'chars,words', aria: 'none' });
+  gsap.set(el, { opacity: 1 });
+  gsap.set(split.chars, {
+    transformPerspective: 800,
+    opacity: 0,
+    rotateX: 90,
+    x: '6rem',
+    transformOrigin: '50% 100%',
+  });
+  return { type: 'accent', split };
+}
+
+// Setup: masked line slide for blockquotes / long serif lines
+function _setupLines(el) {
+  // aria:'none' prevents SplitText adding aria-label to <p> (ARIA prohibits on paragraph role).
+  // For blockquote the default 'auto' would be fine, but 'none' is safe for both.
+  const split = new SplitText(el, { type: 'lines', mask: 'lines', aria: 'none' });
+  gsap.set(el, { opacity: 1 });
+  gsap.set(split.lines, { yPercent: 110 });
+  const splitRef = { current: split };
+  const state = { revealed: false };
+  _lineSplits.push({ el, splitRef, state });
+  return { type: 'lines', splitRef, state };
+}
+
+function _animateChars(data, delay) {
+  gsap.to(data.split.chars, {
+    opacity: 1,
+    yPercent: 0,
+    rotateY: 0,
+    duration: 1.2,
+    stagger: 0.05,
+    ease: 'revealOut',
+    delay,
+    clearProps: 'transform,opacity',
+  });
+}
+
+function _animateAccent(data, delay) {
+  gsap.to(data.split.chars, {
+    opacity: 1,
+    rotateX: 0,
+    x: 0,
+    duration: 1.2,
+    stagger: 0.08,
+    ease: 'revealOut',
+    delay,
+    clearProps: 'transform,opacity',
+  });
+}
+
+function _animateLines(data, delay) {
+  data.state.revealed = true;
+  gsap.to(data.splitRef.current.lines, {
+    yPercent: 0,
+    duration: 1.2,
+    stagger: 0.1,
+    ease: 'revealOut',
+    delay,
+  });
+}
+
+function _animateFade(el, delay) {
+  gsap.fromTo(el,
+    { opacity: 0, y: 28 },
+    { opacity: 1, y: 0, duration: 0.8, ease: 'revealOut', delay }
+  );
+}
+
+function _animateHairline(el, delay) {
+  gsap.fromTo(el,
+    { clipPath: 'inset(0 100% 0 0)' },
+    { clipPath: 'inset(0 0% 0 0)', duration: 0.8, ease: 'revealOut', delay }
+  );
+}
+
+function initReveals() {
+  // ── Standalone [data-reveal] (not inside a [data-rg]) ──────────────
+  document.querySelectorAll('[data-reveal]').forEach(el => {
+    if (el.closest('[data-rg]')) return;
+    const type = _revealType(el);
+    let data;
+    if (type === 'chars')  data = _setupChars(el);
+    else if (type === 'accent') data = _setupAccent(el);
+    else if (type === 'lines')  data = _setupLines(el);
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        if (type === 'chars')       _animateChars(data, 0);
+        else if (type === 'accent') _animateAccent(data, 0);
+        else if (type === 'lines')  _animateLines(data, 0);
+        else                        _animateFade(el, 0);
+      },
     });
-  }, { threshold: 0.12 });
+  });
 
-  // Group reveals (stagger children [data-ri])
-  const groupIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const items = e.target.querySelectorAll('[data-ri]');
-      items.forEach((el, i) => {
-        setTimeout(() => el.classList.add('is-in'), i * STAGGER);
+  // ── [data-rg] stagger groups ───────────────────────────────────────
+  document.querySelectorAll('[data-rg]').forEach(groupEl => {
+    const items = [...groupEl.querySelectorAll('[data-ri]')];
+    if (!items.length) return;
+
+    const itemData = items.map((item, i) => {
+      const type = _revealType(item);
+      const delay = i * 0.1;
+      if (type === 'chars')  return { item, delay, ..._setupChars(item) };
+      if (type === 'accent') return { item, delay, ..._setupAccent(item) };
+      if (type === 'lines')  return { item, delay, ..._setupLines(item) };
+      return { item, delay, type: 'fade' };
+    });
+
+    ScrollTrigger.create({
+      trigger: groupEl,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        itemData.forEach(d => {
+          if (d.type === 'chars')       _animateChars(d, d.delay);
+          else if (d.type === 'accent') _animateAccent(d, d.delay);
+          else if (d.type === 'lines')  _animateLines(d, d.delay);
+          else                          _animateFade(d.item, d.delay);
+        });
+      },
+    });
+  });
+
+  // ── Hairline wipes (independent triggers) ─────────────────────────
+  document.querySelectorAll('[data-split="hr"]').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => _animateHairline(el, 0),
+    });
+  });
+
+  // ── Resize re-split for line-split elements (debounced) ───────────
+  let _resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+      _lineSplits.forEach(({ el, splitRef, state }) => {
+        splitRef.current.revert();
+        splitRef.current = new SplitText(el, { type: 'lines', mask: 'lines', aria: 'none' });
+        if (!state.revealed) {
+          gsap.set(splitRef.current.lines, { yPercent: 110 });
+        }
       });
-      groupIO.unobserve(e.target);
-    });
-  }, { threshold: 0.12 });
+    }, 200);
+  }, { passive: true });
 
-  document.querySelectorAll('[data-reveal]').forEach(el => revealIO.observe(el));
-  document.querySelectorAll('[data-rg]').forEach(el => groupIO.observe(el));
+  ScrollTrigger.refresh();
+}
+
+if (!reduced) {
+  document.fonts.ready.then(initReveals);
 }
 
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
@@ -182,8 +358,8 @@ if (!reduced) {
     const headerH = header?.offsetHeight ?? 108;
     const viewH   = window.innerHeight;
     const colH    = details.offsetHeight;
-    const topA    = headerH + 24;                 // short column: stick under header
-    const topB    = viewH - colH - 24;            // tall column: stick bottom 24px above fold
+    const topA    = headerH + 24;
+    const topB    = viewH - colH - 24;
     details.style.setProperty('--stone-details-top', Math.min(topA, topB) + 'px');
   }
 
@@ -212,7 +388,6 @@ if (!reduced) {
     });
   }
 
-  // Button click → immediate active feedback + scroll to that frame
   btns.forEach((btn, i) => {
     btn.addEventListener('click', () => {
       setActive(i);
@@ -230,7 +405,6 @@ if (!reduced) {
     });
   });
 
-  // IntersectionObserver: track which frame is topmost in the reading zone
   const headerH = header?.offsetHeight ?? 108;
   const navH    = lightingNav.offsetHeight;
   const topCrop = headerH + 16 + navH;
@@ -292,7 +466,6 @@ if (!reduced) {
     applyStep(step, intra);
   };
 
-  // Button clicks → scroll to that step's start
   btns.forEach((btn, i) => {
     btn.addEventListener('click', () => {
       const viewH    = window.innerHeight;
@@ -304,7 +477,6 @@ if (!reduced) {
     });
   });
 
-  // Preload all 5 images when section is ~2 viewports away
   const preloadIO = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
     imgs.forEach(img => {
@@ -317,6 +489,5 @@ if (!reduced) {
   }, { rootMargin: '200% 0px' });
   preloadIO.observe(pin);
 
-  // Initialise from current scroll (e.g. page loaded mid-section)
   updateOriginPin(window.scrollY);
 }());
