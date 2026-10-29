@@ -172,17 +172,30 @@ function _revealType(el) {
   return 'fade';
 }
 
-// Setup: char flip for large serif display headings
+// Setup: char flip for large serif display headings.
+// <em> children inside the heading use the accent pattern (rotateX+x) while
+// the heading element keeps its full accessible name via aria:'auto'.
 function _setupChars(el) {
+  const emEls = [...el.querySelectorAll('em')];
   const split = new SplitText(el, { type: 'chars,words' });
+
+  // Partition chars: those inside <em> get the accent treatment
+  const accentChars = emEls.length
+    ? split.chars.filter(c => emEls.some(em => em.contains(c)))
+    : [];
+  const mainChars = accentChars.length
+    ? split.chars.filter(c => !accentChars.includes(c))
+    : split.chars;
+
   gsap.set(el, { opacity: 1 });
-  gsap.set(split.chars, {
-    transformPerspective: 800,
-    opacity: 0,
-    yPercent: 50,
-    rotateY: 90,
-  });
-  return { type: 'chars', split };
+  gsap.set(mainChars, { transformPerspective: 800, opacity: 0, yPercent: 50, rotateY: 90 });
+  if (accentChars.length) {
+    gsap.set(accentChars, {
+      transformPerspective: 800, opacity: 0,
+      rotateX: 90, x: '6rem', transformOrigin: '50% 100%',
+    });
+  }
+  return { type: 'chars', split, mainChars, accentChars };
 }
 
 // Setup: italic accent chars from rotateX 90° + x offset, pivot bottom.
@@ -215,16 +228,21 @@ function _setupLines(el) {
 }
 
 function _animateChars(data, delay) {
-  gsap.to(data.split.chars, {
-    opacity: 1,
-    yPercent: 0,
-    rotateY: 0,
-    duration: 1.2,
-    stagger: 0.05,
-    ease: 'revealOut',
-    delay,
-    clearProps: 'transform,opacity',
-  });
+  if (data.mainChars.length) {
+    gsap.to(data.mainChars, {
+      opacity: 1, yPercent: 0, rotateY: 0,
+      duration: 1.2, stagger: 0.05, ease: 'revealOut',
+      delay, clearProps: 'transform,opacity',
+    });
+  }
+  if (data.accentChars.length) {
+    // Accent starts 0.3s after the first main char so they cascade together
+    gsap.to(data.accentChars, {
+      opacity: 1, rotateX: 0, x: 0,
+      duration: 1.2, stagger: 0.08, ease: 'revealOut',
+      delay: delay + 0.3, clearProps: 'transform,opacity',
+    });
+  }
 }
 
 function _animateAccent(data, delay) {
@@ -346,7 +364,118 @@ function initReveals() {
 }
 
 if (!reduced) {
-  document.fonts.ready.then(initReveals);
+  const heroBgImg = document.querySelector('.hero__bg-img');
+  const imageReady = heroBgImg ? heroBgImg.decode().catch(() => {}) : Promise.resolve();
+  Promise.all([document.fonts.ready, imageReady]).then(() => {
+    initReveals();
+    initHeroDive();
+  });
+}
+
+// ─── Hero dive (I2) ─────────────────────────────────────────────────
+// CSS makes .hero__stage sticky; GSAP drives parallax+scale on scroll.
+// Focus point is defined in image coordinates via data-focus-x / data-focus-y
+// on the <img>. The transform-origin and mobile object-position are computed
+// at runtime from the object-fit:cover crop geometry so the zoom lands on
+// the pit at every aspect ratio. See README for how to retune on image swap.
+function initHeroDive() {
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+
+  const stage   = hero.querySelector('.hero__stage');
+  const bgWrap  = hero.querySelector('.hero__bg-wrap');
+  const bgImg   = hero.querySelector('.hero__bg-img');
+  const overlay = hero.querySelector('.hero__overlay');
+  const colL    = hero.querySelector('.hero__col--l');
+  const colR    = hero.querySelector('.hero__col--r');
+  if (!stage || !bgWrap || !bgImg || !overlay) return;
+
+  const focusX = parseFloat(bgImg.dataset.focusX) || 0.54;
+  const focusY = parseFloat(bgImg.dataset.focusY) || 0.70;
+
+  // Convert image-space focus point (focusX, focusY) to stage-space percentages,
+  // accounting for object-fit:cover crop. On mobile also returns the
+  // object-position value that centres the pit within the viewport.
+  function computeFocus() {
+    const iW = bgImg.naturalWidth;
+    const iH = bgImg.naturalHeight;
+    const sW = stage.offsetWidth;
+    const sH = stage.offsetHeight;
+    if (!iW || !iH || !sW || !sH) return null;
+
+    const s = Math.max(sW / iW, sH / iH);       // cover scale factor
+    const renderedW = iW * s;
+    const renderedH = iH * s;
+    const overflowX = renderedW - sW;
+    const overflowY = renderedH - sH;
+
+    // On mobile portrait the image is wider than the stage.
+    // Shift object-position so the pit lands near centre.
+    let objPx = 50, objPy = 50;
+    const isMobile = sW < 900;
+    if (isMobile) {
+      if (overflowX > 1)
+        objPx = Math.max(0, Math.min(100,
+          (focusX * renderedW - sW * 0.5) / overflowX * 100));
+      if (overflowY > 1)
+        objPy = Math.max(0, Math.min(100,
+          (focusY * renderedH - sH * 0.5) / overflowY * 100));
+    }
+
+    // Crop offset driven by the object-position percentages above
+    const cropLeft = overflowX * (objPx / 100);
+    const cropTop  = overflowY * (objPy / 100);
+
+    // Pit position in stage coordinates → transform-origin percentages
+    const pitSX = focusX * renderedW - cropLeft;
+    const pitSY = focusY * renderedH - cropTop;
+
+    return {
+      origin: `${(pitSX / sW * 100).toFixed(2)}% ${(pitSY / sH * 100).toFixed(2)}%`,
+      objPos: isMobile ? `${objPx.toFixed(1)}% ${objPy.toFixed(1)}%` : null,
+    };
+  }
+
+  let heroDiveST = null;
+
+  function buildDive() {
+    if (heroDiveST) { heroDiveST.kill(); heroDiveST = null; }
+    gsap.set([bgWrap, overlay], { clearProps: 'all' });
+    if (colL) gsap.set([colL, colR], { clearProps: 'all' });
+
+    const focus  = computeFocus();
+    const origin = focus ? focus.origin : `${focusX * 100}% ${focusY * 100}%`;
+
+    bgImg.style.objectPosition = focus?.objPos || '';
+
+    // Total timeline = 10 arbitrary units over the full scroll distance
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 1,
+      },
+    });
+
+    tl.to(overlay, { y: '-120vh', ease: 'none', duration: 4 }, 0);
+    tl.to(bgWrap,  { y: '-20vh',  ease: 'none', duration: 10 }, 0);
+    tl.to(bgWrap,  { scale: 2.2, transformOrigin: origin, ease: 'none', duration: 8 }, 2);
+    if (colL) {
+      tl.to(colL, { xPercent: -100, ease: 'none', duration: 5 }, 3);
+      tl.to(colR, { xPercent:  100, ease: 'none', duration: 5 }, 3);
+    }
+
+    heroDiveST = tl.scrollTrigger;
+  }
+
+  buildDive();
+
+  let _diveResizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(_diveResizeTimer);
+    _diveResizeTimer = setTimeout(() => {
+      buildDive();
+      ScrollTrigger.refresh();
+    }, 200);
+  }, { passive: true });
 }
 
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
@@ -477,17 +606,22 @@ if (!reduced) {
     });
   });
 
-  const preloadIO = new IntersectionObserver(entries => {
+  // Prefetch origin images when the section is ~1 viewport away.
+  // new Image() + decode() avoids the "preloaded but not used" warning
+  // that <link rel="preload"> triggers when the JPEG hint is unused
+  // because the browser served a WebP from the <picture> source.
+  const prefetchIO = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
     imgs.forEach(img => {
-      const link = Object.assign(document.createElement('link'), {
-        rel: 'preload', as: 'image', href: img.src,
-      });
-      document.head.appendChild(link);
+      const source = img.closest('picture')?.querySelector('source[type="image/webp"]');
+      const hint = new Image();
+      if (source) { hint.srcset = source.srcset; hint.sizes = source.sizes || '100vw'; }
+      hint.src = img.src;
+      hint.decode().catch(() => {});
     });
-    preloadIO.disconnect();
-  }, { rootMargin: '200% 0px' });
-  preloadIO.observe(pin);
+    prefetchIO.disconnect();
+  }, { rootMargin: '100% 0px' });
+  prefetchIO.observe(pin);
 
   updateOriginPin(window.scrollY);
 }());

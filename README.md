@@ -36,6 +36,18 @@ Source images live in `public/img/` with fixed names:
 
 To swap: drop new JPEG or PNG files with the same names into `public/img/`, then run `npm run images` (or `npm run build`). The script generates WebP variants only at widths ≤ the source width (800w, 1600w, 2400w). No upscaling — a 1600px source gets 800w and 1600w only; a ≥2400px source gets all three. Srcsets in the built HTML automatically match the generated widths.
 
+### Hero focus point (`paddy.jpg`)
+
+The hero scroll-dive zooms toward a specific point in `paddy.jpg`. The target is stored as **image coordinates** on the `<img class="hero__bg-img">` element:
+
+```html
+<img … data-focus-x="0.54" data-focus-y="0.70">
+```
+
+These are fractions of the image's natural width and height (0 = left/top, 1 = right/bottom). The JavaScript in `src/main.js` (`initHeroDive`) converts them to the correct `transform-origin` at runtime using the `object-fit: cover` crop geometry, so the zoom lands on the same spot at every viewport size. On mobile portrait it also sets `object-position` to keep the focus point near the centre.
+
+**When you swap `paddy.jpg`:** open the new image, identify the feature you want to zoom toward, and measure its position as a fraction of the image dimensions. Update `data-focus-x` and `data-focus-y` accordingly. No CSS or JS changes needed.
+
 ## Site URL
 
 Open `.env` and set `SITE_URL` to your deployed domain before building for production:
