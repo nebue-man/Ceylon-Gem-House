@@ -9,8 +9,23 @@ Concept website for an online store selling certified Ceylon (Sri Lankan) colour
 ## Stack
 - Vite (`npm run dev` / `npm run build` → `dist/`)
 - Plain HTML + CSS (`src/styles/main.css`) + JS (`src/main.js`)
-- Lenis for smooth scroll (disabled under `prefers-reduced-motion: reduce`)
+- GSAP 3 with ScrollTrigger, SplitText, CustomEase — one animation loop via `gsap.ticker`
+- Lenis for smooth scroll, driven by `gsap.ticker.add((t) => lenis.raf(t * 1000))`; disabled under `prefers-reduced-motion: reduce`
 - Image pipeline: `scripts/gen-images.js` generates WebP variants via sharp
+
+## Intro animation (I3)
+
+The intro plays on first visit per session (`sessionStorage` key `cghVisited`). A no-flash inline `<head>` script adds `intro-full` or `intro-short` to `<html>` before CSS paints; under `prefers-reduced-motion` neither class is added.
+
+**Full intro** (≤7 s on a fast connection): navy cover text reveals → progress bar gates on `img.decode()` + `document.fonts.ready` → oval window (`mask-image` ellipse via CSS vars `--ox`, `--oy`, `--oc`) rises from below screen → oval dives past screen edge revealing hero → hand-off (preloader removed, scroll unlocked).
+
+**Short intro** (≈1.8 s, repeat visits): oval rise + dive only at 0.8× / 1.0× durations.
+
+**Skip**: "Skip intro" button (first Tab stop), any key, click or wheel, drives `master.progress` to 1 in 0.4 s.
+
+**Tuning**: all durations are in `initIntro()` in `src/main.js`. To shorten the full intro trim the bar fill duration (`0.75 s`) or `ovalDur` (`1.5 s`). Never shorten `diveDur` (`2.4 s`) — the hero scale and preloader fade are derived from it.
+
+**Hero focus point**: `data-focus-x` / `data-focus-y` on `<img class="hero__bg-img">` are image-coordinate fractions (0–1). Update them when swapping `paddy.jpg`. See README for details.
 
 ## Design system
 - Background linen `#F2EDE4`; light panel `#FAF7F1`; trade band `#E7DFD2`; dark sections `--navy: #0F1A33` and `#1A1916`.
