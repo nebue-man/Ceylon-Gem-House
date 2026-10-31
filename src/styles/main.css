@@ -908,9 +908,7 @@ html.intro-short .preloader__foot {
   margin-top: -20vh;
   /* Default linen — JS overrides to --handoff-green for the scroll scrub */
   background: var(--bg-linen);
-  /* Oval shape at top — GSAP scrubs from 4px → 160px on entry; this is the resting value */
-  border-radius: 50% 50% 0 0 / 160px 160px 0 0;
-  padding-top: calc(20vh + 160px);
+  padding-top: 72px;
   padding-bottom: 96px;
 }
 

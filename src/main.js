@@ -756,61 +756,23 @@ function initHeroDive() {
   }, { passive: true });
 }
 
-// ─── Facts handoff: colour + oval growth (I5 emergence) ─────────────
-// Colour scrubs navy (pit dark) → paddy green → linen as facts covers the
-// viewport. Oval cap border-radius grows from 4 px (slit) → 160 px (dome)
-// as the section enters, driven by a separate ScrollTrigger.
-// Gates fact reveals until cap colour is ≥90% linen.
+// ─── Facts handoff: header switch ────────────────────────────────────
+// Facts is linen from the start; reveals fire via normal IO as elements
+// enter the viewport. Only the header class needs a trigger.
 function initFactsHandoff() {
   const factsEl = document.querySelector('[data-facts-gate]');
   if (!factsEl) return;
 
-  const cs    = getComputedStyle(document.documentElement);
-  const navy  = cs.getPropertyValue('--navy').trim()         || '#0F1A33';
-  const green = cs.getPropertyValue('--handoff-green').trim()|| '#54522B';
-  const linen = cs.getPropertyValue('--bg-linen').trim()     || '#F2EDE4';
+  // Reveals register immediately — IO keeps them hidden until in view
+  initFactsReveals();
 
-  let factsRevealsInited = false;
-
-  function updateCap(progress) {
-    const isLinen = progress >= 0.9;
-    document.documentElement.classList.toggle('facts-linen', isLinen);
-    if (isLinen && !factsRevealsInited) {
-      factsRevealsInited = true;
-      initFactsReveals();
-    }
-  }
-
-  // Three-stop colour: navy (first 15% of travel) → green → linen
-  const colorTl = gsap.timeline({
-    scrollTrigger: {
-      trigger: factsEl,
-      start: 'top bottom',
-      end:   'top top',
-      scrub: true,
-      onUpdate(self)  { updateCap(self.progress); },
-      onLeave()       { updateCap(1); },
-      onLeaveBack()   { updateCap(0); },
-    },
+  // Header switches from hero-dark to body-dark once facts covers the nav
+  ScrollTrigger.create({
+    trigger: factsEl,
+    start: 'top 10%',
+    onEnter()     { document.documentElement.classList.add('facts-linen'); },
+    onLeaveBack() { document.documentElement.classList.remove('facts-linen'); },
   });
-  colorTl
-    .fromTo(factsEl, { backgroundColor: navy  }, { backgroundColor: green, ease: 'none', duration: 0.15 }, 0)
-    .to(    factsEl,                              { backgroundColor: linen, ease: 'none', duration: 0.85 }, 0.15);
-
-  // Oval cap: flat slit on entry → full dome by the time facts top is 40% down the viewport
-  gsap.fromTo(factsEl,
-    { borderRadius: '50% 50% 0 0 / 4px 4px 0 0' },
-    {
-      borderRadius: '50% 50% 0 0 / 160px 160px 0 0',
-      ease: 'none',
-      scrollTrigger: {
-        trigger: factsEl,
-        start: 'top bottom',
-        end:   'top 40%',
-        scrub: true,
-      },
-    }
-  );
 }
 
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
