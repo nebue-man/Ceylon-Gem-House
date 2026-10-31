@@ -94,6 +94,9 @@
     </div>
     </div>
 
+    <!-- Darkening overlay: animated in the last 25% of the hero dive -->
+    <div class="hero__darken" aria-hidden="true"></div>
+
     <!-- Navy side columns (desktop only, slide out on dive) -->
     <div class="hero__col hero__col--l" aria-hidden="true"></div>
     <div class="hero__col hero__col--r" aria-hidden="true"></div>
@@ -117,7 +120,7 @@
 </section>
 
 <!-- Facts — overlaps hero by 20vh with wide oval-curved linen top edge -->
-<section aria-label="The record in numbers" class="facts">
+<section aria-label="The record in numbers" class="facts" data-facts-gate>
 <div class="facts__inner">
 <div class="facts__grid" data-rg>
 <div class="fact" data-ri>
@@ -274,10 +277,9 @@
 <div class="featured__inner">
 <picture>
   <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 50vw">
-  <img src="/img/sapphire.jpg" alt="Featured blue sapphire, oval cut" class="featured__img" width="1600" height="900" loading="lazy">
+  <img src="/img/sapphire.jpg" alt="Featured blue sapphire, oval cut" class="featured__img" width="1600" height="900" loading="lazy" style="view-transition-name: stone-hero">
 </picture>
 <div class="featured__details">
-<p class="featured__eyebrow">NEW THIS MONTH</p>
 <h2 class="featured__heading" data-reveal data-split="chars">Blue sapphire, oval, [X.XX] ct</h2>
 <dl class="featured__specs">
 <dt class="featured__dt">Dimensions</dt><dd class="featured__dd">[L × W × D] mm</dd>
@@ -302,16 +304,17 @@
 <section id="record" class="record">
 <div class="record__inner">
 <div class="record__left" data-rg>
-<p class="record__eyebrow" data-ri>THE RECORD</p>
 <h2 class="record__heading" data-ri data-split="chars">The lab speaks.<br><em>We show the papers.</em></h2>
 <p class="record__body" data-ri>Origin and treatment are stated by an independent laboratory, never by us. Heating is disclosed as plainly as carat weight.</p>
+<p class="record__note" data-ri>Every stone listed carries its full report, open to verify on the lab's own site.</p>
+<a href="stone.html" class="record__cta" data-ri>See the current stone</a>
 </div>
 <div class="hairline hairline--ink" data-split="hr" aria-hidden="true"></div>
 <ol class="record__steps">
-<li class="record__step" data-reveal><span class="record__num">01</span><div><h3 class="record__step-heading">Laboratory report</h3><p class="record__step-body">A named lab, report number and date, with a link to verify it on the lab's own site.</p></div><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
-<li class="record__step" data-reveal><span class="record__num">02</span><div><h3 class="record__step-heading">Provenance record</h3><p class="record__step-body">The district where documented, when we acquired it, who cut it, and its export reference.</p></div><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
-<li class="record__step" data-reveal><span class="record__num">03</span><div><h3 class="record__step-heading">Unedited light</h3><p class="record__step-body">Video in daylight, warm light and LED, beside a colour card, so the blue you see is the blue you receive.</p></div><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
-<li class="record__step" data-reveal><span class="record__num">04</span><div><h3 class="record__step-heading">Sealed, insured delivery</h3><p class="record__step-body">Exported through the National Gem and Jewellery Authority, then insured and signed for at your door.</p></div><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
+<li class="record__step" data-reveal><h3 class="record__step-heading">Laboratory report</h3><p class="record__step-body">A named lab, report number and date, with a link to verify it on the lab's own site.</p><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
+<li class="record__step" data-reveal><h3 class="record__step-heading">Provenance record</h3><p class="record__step-body">The district where documented, when we acquired it, who cut it, and its export reference.</p><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
+<li class="record__step" data-reveal><h3 class="record__step-heading">Unedited light</h3><p class="record__step-body">Video in daylight, warm light and LED, beside a colour card, so the blue you see is the blue you receive.</p><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
+<li class="record__step" data-reveal><h3 class="record__step-heading">Sealed, insured delivery</h3><p class="record__step-body">Exported through the National Gem and Jewellery Authority, then insured and signed for at your door.</p><div class="hairline" data-split="hr" aria-hidden="true"></div></li>
 </ol>
 </div>
 </section>
@@ -320,7 +323,6 @@
 <section id="trade" class="trade">
 <div class="trade__inner">
 <div class="trade__left" data-rg>
-<p class="trade__eyebrow" data-ri>FOR JEWELLERS AND DESIGNERS</p>
 <h2 class="trade__heading" data-ri data-split="chars">Calibrated stones, matched pairs, <em>repeat supply.</em></h2>
 </div>
 <div class="trade__right" data-reveal>
@@ -340,6 +342,7 @@
 <div class="inquire__left" data-rg>
 <h2 class="inquire__heading" data-ri data-split="chars">Ask about <em>a stone.</em></h2>
 <p class="inquire__body" data-ri>Tell us what you are looking for. We will reply with photographs, video and the report, and arrange a viewing call if you wish.</p>
+<p class="inquire__note" data-ri>We reply within [24] hours from Colombo, with photographs under three lights, the full lab report and an offer to arrange a video viewing.</p>
 </div>
 <form class="inquire__form" data-reveal>
 <div class="field"><label for="q-name" class="field__label">Name</label><input id="q-name" type="text" autocomplete="name" class="field__input"></div>

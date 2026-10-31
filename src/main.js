@@ -287,6 +287,7 @@ function initReveals() {
   // ── Standalone [data-reveal] (not inside a [data-rg]) ──────────────
   document.querySelectorAll('[data-reveal]').forEach(el => {
     if (el.closest('[data-rg]')) return;
+    if (el.closest('[data-facts-gate]')) return; // gated until cap turns linen
     const type = _revealType(el);
     let data;
     if (type === 'chars')  data = _setupChars(el);
@@ -308,6 +309,7 @@ function initReveals() {
 
   // ── [data-rg] stagger groups ───────────────────────────────────────
   document.querySelectorAll('[data-rg]').forEach(groupEl => {
+    if (groupEl.closest('[data-facts-gate]')) return; // gated until cap turns linen
     const items = [...groupEl.querySelectorAll('[data-ri]')];
     if (!items.length) return;
 
@@ -363,6 +365,56 @@ function initReveals() {
   ScrollTrigger.refresh();
 }
 
+// ─── Facts reveals — fired once the cap has scrubbed to ≥90% linen ──
+function initFactsReveals() {
+  const gate = document.querySelector('[data-facts-gate]');
+  if (!gate) return;
+
+  gate.querySelectorAll('[data-reveal]').forEach(el => {
+    if (el.closest('[data-rg]')) return;
+    const type = _revealType(el);
+    let data;
+    if (type === 'chars')       data = _setupChars(el);
+    else if (type === 'accent') data = _setupAccent(el);
+    else if (type === 'lines')  data = _setupLines(el);
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%', once: true,
+      onEnter: () => {
+        if (type === 'chars')       _animateChars(data, 0);
+        else if (type === 'accent') _animateAccent(data, 0);
+        else if (type === 'lines')  _animateLines(data, 0);
+        else                        _animateFade(el, 0);
+      },
+    });
+  });
+
+  gate.querySelectorAll('[data-rg]').forEach(groupEl => {
+    const items = [...groupEl.querySelectorAll('[data-ri]')];
+    if (!items.length) return;
+    const itemData = items.map((item, i) => {
+      const type = _revealType(item);
+      const delay = i * 0.1;
+      if (type === 'chars')  return { item, delay, ..._setupChars(item) };
+      if (type === 'accent') return { item, delay, ..._setupAccent(item) };
+      if (type === 'lines')  return { item, delay, ..._setupLines(item) };
+      return { item, delay, type: 'fade' };
+    });
+    ScrollTrigger.create({
+      trigger: groupEl, start: 'top 85%', once: true,
+      onEnter: () => {
+        itemData.forEach(d => {
+          if (d.type === 'chars')       _animateChars(d, d.delay);
+          else if (d.type === 'accent') _animateAccent(d, d.delay);
+          else if (d.type === 'lines')  _animateLines(d, d.delay);
+          else                          _animateFade(d.item, d.delay);
+        });
+      },
+    });
+  });
+
+  ScrollTrigger.refresh();
+}
+
 // ─── Init ────────────────────────────────────────────────────────────
 const heroBgImg  = document.querySelector('.hero__bg-img');
 const imageReady = heroBgImg ? heroBgImg.decode().catch(() => {}) : Promise.resolve();
@@ -378,6 +430,7 @@ if (!reduced) {
     Promise.all([document.fonts.ready, imageReady]).then(() => {
       initReveals();
       initHeroDive();
+      initFactsHandoff();
     });
   }
 }
@@ -582,6 +635,7 @@ function initIntro(imageReady) {
     Promise.all([document.fonts.ready, imageReady]).then(() => {
       initReveals();
       initHeroDive();
+      initFactsHandoff();
       ScrollTrigger.refresh();
     });
   }
@@ -603,8 +657,9 @@ function initHeroDive() {
   const bgWrap  = hero.querySelector('.hero__bg-wrap');
   const bgImg   = hero.querySelector('.hero__bg-img');
   const overlay = hero.querySelector('.hero__overlay');
-  const colL    = hero.querySelector('.hero__col--l');
-  const colR    = hero.querySelector('.hero__col--r');
+  const colL      = hero.querySelector('.hero__col--l');
+  const colR      = hero.querySelector('.hero__col--r');
+  const heroDarken = hero.querySelector('.hero__darken');
   if (!stage || !bgWrap || !bgImg || !overlay) return;
 
   const focusX = parseFloat(bgImg.dataset.focusX) || 0.54;
@@ -659,6 +714,7 @@ function initHeroDive() {
     if (heroDiveST) { heroDiveST.kill(); heroDiveST = null; }
     gsap.set([bgWrap, overlay], { clearProps: 'all' });
     if (colL) gsap.set([colL, colR], { clearProps: 'all' });
+    if (heroDarken) gsap.set(heroDarken, { clearProps: 'opacity' });
 
     const focus  = computeFocus();
     const origin = focus ? focus.origin : `${focusX * 100}% ${focusY * 100}%`;
@@ -680,6 +736,11 @@ function initHeroDive() {
       tl.to(colR, { xPercent:  100, ease: 'none', duration: 5 }, 3);
     }
 
+    // Darken last 25% of dive (units 7.5–10) so green cap blends in
+    if (heroDarken) {
+      tl.to(heroDarken, { opacity: 0.15, ease: 'none', duration: 2.5 }, 7.5);
+    }
+
     heroDiveST = tl.scrollTrigger;
   }
 
@@ -693,6 +754,47 @@ function initHeroDive() {
       ScrollTrigger.refresh();
     }, 200);
   }, { passive: true });
+}
+
+// ─── Facts cap colour scrub (I2 hand-off refinement) ────────────────
+// Scrubs facts background from paddy green (--handoff-green) to linen as
+// the section covers the viewport. Gates facts reveals until cap is ≥90% linen.
+// Header class 'facts-linen' overrides the hero's dark-section IO styling.
+function initFactsHandoff() {
+  const factsEl = document.querySelector('[data-facts-gate]');
+  if (!factsEl) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const green = cs.getPropertyValue('--handoff-green').trim() || '#54522B';
+  const linen = cs.getPropertyValue('--bg-linen').trim()       || '#F2EDE4';
+
+  let factsRevealsInited = false;
+
+  function updateCap(progress) {
+    const isLinen = progress >= 0.9;
+    document.documentElement.classList.toggle('facts-linen', isLinen);
+    if (isLinen && !factsRevealsInited) {
+      factsRevealsInited = true;
+      initFactsReveals();
+    }
+  }
+
+  gsap.fromTo(factsEl,
+    { backgroundColor: green },
+    {
+      backgroundColor: linen,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: factsEl,
+        start: 'top bottom',
+        end: 'top top',
+        scrub: true,
+        onUpdate(self)  { updateCap(self.progress); },
+        onLeave()       { updateCap(1); },
+        onLeaveBack()   { updateCap(0); },
+      },
+    }
+  );
 }
 
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
@@ -783,7 +885,7 @@ function initHeroDive() {
   const counter = pin.querySelector('.origin-counter');
   const bar     = pin.querySelector('.origin-progress-bar');
   const STEPS   = 5;
-  const LABELS  = ['01 / 05', '02 / 05', '03 / 05', '04 / 05', '05 / 05'];
+  const LABELS  = ['1 of 5', '2 of 5', '3 of 5', '4 of 5', '5 of 5'];
   let currentStep = -1;
 
   function applyStep(step, intra) {

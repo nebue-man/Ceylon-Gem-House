@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The stones — Ceylon Gem House</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Browse certified coloured stones from Ceylon Gem House — each with its lab report, full provenance record and documentation under three lights.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The stones — Ceylon Gem House">
+<meta property="og:description" content="Certified coloured stones from Sri Lanka. Lab report, provenance and full media documentation for every stone.">
+<meta property="og:image" content="%%SITE_URL%%/img/sapphire.jpg">
+<meta property="og:url" content="%%SITE_URL%%/stones.html">
+<meta name="theme-color" content="#F2EDE4">
+<link rel="canonical" href="%%SITE_URL%%/stones.html">
+<link rel="preload" href="/fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/src/styles/main.css">
+<link rel="stylesheet" href="/src/styles/stones.css">
+<script>
+(function(){
+  try { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); } catch(e){}
+  document.documentElement.classList.add('js');
+})();
+</script>
+</head>
+<body>
+<div class="site">
+<a href="#stones-grid" class="skip-link">Skip to catalog</a>
+
+<!--HEADER-->
+
+<main id="stones-main" class="stones-main">
+
+  <div class="stones-header">
+    <p class="stones-eyebrow">THE STONES · <span id="stones-count"><!--STONES_COUNT--></span> AVAILABLE</p>
+    <h1 class="stones-headline" aria-label="Stones from Sri Lankan soil">
+      <span class="sh-wrap"><span class="sh-line">Stones from</span></span>
+      <span class="sh-wrap sh-wrap--italic"><em class="sh-line">Sri Lankan soil</em></span>
+    </h1>
+    <p class="stones-sub">Every stone with its lab report, its lighting and its record.</p>
+  </div>
+
+  <div class="stones-grid-wrap">
+    <div class="stones-grid" id="stones-grid" role="list" aria-label="Stone catalog">
+      <!-- STONES_GRID -->
+    </div>
+    <div class="stones-empty" hidden aria-live="polite">
+      <p class="stones-empty__msg">No stones match these filters.</p>
+      <button class="stones-empty__reset">Reset filters</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Filter + sort panel -->
+<div class="stones-panel" id="stones-panel" role="dialog" aria-modal="true" aria-label="Filter and sort" hidden>
+  <div class="sp-backdrop"></div>
+  <div class="stones-panel__inner">
+    <div class="sp-head">
+      <span class="sp-title">Filter &amp; sort</span>
+      <button class="sp-close" aria-label="Close filters">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M15 5L5 15M5 5l10 10"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="sp-body">
+
+      <fieldset class="sp-group">
+        <legend class="sp-group__label">Variety</legend>
+        <label class="sp-opt"><input type="checkbox" name="variety" value="blue sapphire"><span>Blue sapphire</span></label>
+        <label class="sp-opt"><input type="checkbox" name="variety" value="padparadscha sapphire"><span>Padparadscha sapphire</span></label>
+        <label class="sp-opt"><input type="checkbox" name="variety" value="star sapphire"><span>Star sapphire</span></label>
+        <label class="sp-opt"><input type="checkbox" name="variety" value="yellow sapphire"><span>Yellow sapphire</span></label>
+      </fieldset>
+
+      <fieldset class="sp-group">
+        <legend class="sp-group__label">Shape</legend>
+        <label class="sp-opt"><input type="checkbox" name="shape" value="oval"><span>Oval</span></label>
+        <label class="sp-opt"><input type="checkbox" name="shape" value="cushion"><span>Cushion</span></label>
+        <label class="sp-opt"><input type="checkbox" name="shape" value="round"><span>Round</span></label>
+        <label class="sp-opt"><input type="checkbox" name="shape" value="cabochon"><span>Cabochon</span></label>
+        <label class="sp-opt"><input type="checkbox" name="shape" value="pear"><span>Pear</span></label>
+      </fieldset>
+
+      <fieldset class="sp-group">
+        <legend class="sp-group__label">Carat weight</legend>
+        <div class="sp-carat">
+          <label class="sp-carat__label">
+            <span class="sp-carat__text">From</span>
+            <input class="sp-carat__input" type="number" name="carat-min" min="0" step="0.01" placeholder="0">
+          </label>
+          <span class="sp-carat__sep" aria-hidden="true">–</span>
+          <label class="sp-carat__label">
+            <span class="sp-carat__text">To</span>
+            <input class="sp-carat__input" type="number" name="carat-max" min="0" step="0.01" placeholder="any">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="sp-group">
+        <legend class="sp-group__label">Treatment</legend>
+        <label class="sp-opt"><input type="checkbox" name="treatment" value="Heated"><span>Heated</span></label>
+        <label class="sp-opt"><input type="checkbox" name="treatment" value="No indications of heating"><span>No heat</span></label>
+        <label class="sp-opt"><input type="checkbox" name="treatment" value="[Pending]"><span>Test pending</span></label>
+      </fieldset>
+
+      <div class="sp-group sp-group--toggles">
+        <p class="sp-group__label">Options</p>
+        <label class="sp-toggle"><input type="checkbox" name="available-only" checked><span>Available only</span></label>
+        <label class="sp-toggle"><input type="checkbox" name="pairs-only"><span>Pairs only</span></label>
+      </div>
+
+      <fieldset class="sp-group">
+        <legend class="sp-group__label">Sort</legend>
+        <label class="sp-opt"><input type="radio" name="sort" value="newest" checked><span>Newest first</span></label>
+        <label class="sp-opt"><input type="radio" name="sort" value="carat-high"><span>Carat: high to low</span></label>
+        <label class="sp-opt"><input type="radio" name="sort" value="carat-low"><span>Carat: low to high</span></label>
+      </fieldset>
+
+    </div>
+
+    <div class="sp-foot">
+      <button class="sp-reset" type="button">Reset</button>
+      <button class="sp-apply btn-primary" type="button">Show <span class="sp-count"><!--STONES_COUNT--></span> stones</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating filter/sort bar -->
+<div class="stones-bar" role="toolbar" aria-label="Catalog controls">
+  <button class="stones-bar__btn stones-bar__btn--filter" type="button" aria-controls="stones-panel" aria-expanded="false" aria-haspopup="dialog">
+    <svg class="sb-icon" width="16" height="13" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <line x1="0" y1="1.5" x2="16" y2="1.5"/>
+      <line x1="0" y1="6.5" x2="16" y2="6.5"/>
+      <line x1="0" y1="11.5" x2="16" y2="11.5"/>
+      <circle cx="4" cy="1.5" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="11" cy="6.5" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="6" cy="11.5" r="2" fill="currentColor" stroke="none"/>
+    </svg>
+    Filter
+  </button>
+  <button class="stones-bar__btn stones-bar__btn--sort" type="button" aria-controls="stones-panel" aria-expanded="false" aria-haspopup="dialog">
+    Sort
+    <svg class="sb-icon sb-icon--sort" width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <path d="M6 1v12M2 4l4-3 4 3M2 10l4 3 4-3"/>
+    </svg>
+  </button>
+</div>
+
+<!--FOOTER-->
+</div>
+<script type="module" src="/src/stones.js"></script>
+</body>
+</html>

@@ -88,6 +88,9 @@
   --dark-text: #EEE9DF;
   --dark-label: #A9B1C4;
 
+  /* Handoff cap colour — sampled from paddy green; tune here to match new hero image */
+  --handoff-green: #54522B;
+
   /* Accent */
   --accent: #1F3B70;
 
@@ -216,6 +219,28 @@ img {
 }
 .site-header--dark .main-nav__cta {
   border-color: rgba(238,233,223,0.5);
+}
+
+/* Handoff: once facts cap is ≥90% linen the header switches back to dark ink,
+   overriding the hero's dark-section IO which stays active until hero exits. */
+html.facts-linen .site-header--dark,
+html.facts-linen .site-header--scrolled.site-header--dark {
+  color: var(--ink);
+  background: var(--bg-linen);
+  border-bottom-color: var(--ink-hairline);
+}
+html.facts-linen .site-header--dark .logo__mark path,
+html.facts-linen .site-header--dark .badge__gem path {
+  stroke: var(--ink);
+}
+html.facts-linen .site-header--dark .logo__wordmark {
+  color: var(--ink);
+}
+html.facts-linen .site-header--dark .main-nav a {
+  color: var(--ink);
+}
+html.facts-linen .site-header--dark .main-nav__cta {
+  border-color: var(--ink);
 }
 
 .site-header__inner {
@@ -603,6 +628,16 @@ img {
   z-index: 3;
 }
 
+/* Darkening overlay — GSAP animates opacity 0→0.15 in the last 25% of dive */
+.hero__darken {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  z-index: 1; /* above bg-wrap, below navy cols (z:2) and overlay (z:3) */
+  pointer-events: none;
+}
+
 /* Reduced motion: static hero, no sticky, no scroll travel */
 @media (prefers-reduced-motion: reduce) {
   .hero { height: auto; }
@@ -826,7 +861,13 @@ html.intro-short .preloader__foot {
   display: inline-flex;
   align-items: center;
   font-size: 15px;
+  transition: background-color 180ms ease, transform 140ms ease-out;
 }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover { background-color: var(--ink-secondary); }
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .btn-outline {
   text-decoration: none;
@@ -850,7 +891,13 @@ html.intro-short .preloader__foot {
   border-radius: 999px;
   padding: 14px 32px;
   min-height: 48px;
+  transition: background-color 180ms ease, transform 140ms ease-out;
 }
+@media (hover: hover) and (pointer: fine) {
+  .btn-submit:hover { background-color: color-mix(in srgb, var(--accent) 82%, #000); }
+}
+.btn-submit:active { transform: scale(0.97); }
+.btn-submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ============================================================
    FACTS — oval-curved handoff from hero
@@ -859,12 +906,14 @@ html.intro-short .preloader__foot {
   position: relative;
   z-index: 2; /* sits above the sticky hero stage */
   margin-top: -20vh;
+  /* Default linen — JS overrides to --handoff-green for the scroll scrub */
   background: var(--bg-linen);
-  /* Wide oval curve at the top echoes the sapphire-window shape */
+  /* Oval shape at top — solid cap, no mask (feathering lets hero sky bleed through) */
   border-radius: 50% 50% 0 0 / 80px 80px 0 0;
   padding-top: calc(20vh + 80px);
   padding-bottom: 96px;
 }
+
 
 .facts__inner {
   max-width: var(--max-w);
@@ -1333,7 +1382,13 @@ html.intro-short .preloader__foot {
   display: inline-flex;
   align-items: center;
   font-size: 15px;
+  transition: opacity 180ms ease, transform 140ms ease-out;
 }
+@media (hover: hover) and (pointer: fine) {
+  .featured__cta:hover { opacity: 0.82; }
+}
+.featured__cta:active { transform: scale(0.97); }
+.featured__cta:focus-visible { outline: 2px solid rgba(242,237,228,0.7); outline-offset: 3px; }
 
 .featured__also {
   max-width: var(--max-w);
@@ -1387,6 +1442,7 @@ html.intro-short .preloader__foot {
   display: flex;
   flex-wrap: wrap;
   gap: 48px 80px;
+  align-items: flex-start;
 }
 
 .record__left {
@@ -1418,6 +1474,27 @@ html.intro-short .preloader__foot {
   color: var(--ink-secondary);
 }
 
+.record__note {
+  margin: 20px 0 0;
+  max-width: 420px;
+  color: var(--ink-secondary);
+}
+
+.record__cta {
+  display: inline-block;
+  margin-top: 36px;
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 1.6vw, 22px);
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.record__cta::after {
+  content: ' →';
+  display: inline;
+}
+.record__cta:hover { color: var(--accent); }
+
 .record__steps {
   flex: 1 1 520px;
   list-style: none;
@@ -1427,17 +1504,8 @@ html.intro-short .preloader__foot {
 }
 
 .record__step {
-  display: flex;
-  gap: 32px;
   padding: 28px 0;
   border-bottom: 1px solid var(--ink-hairline);
-}
-
-.record__num {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  color: var(--accent);
-  min-width: 32px;
 }
 
 .record__step-heading {
@@ -1538,6 +1606,14 @@ html.intro-short .preloader__foot {
 .inquire__body {
   margin: 28px 0 0;
   max-width: 400px;
+  color: var(--ink-secondary);
+}
+
+.inquire__note {
+  margin: 28px 0 0;
+  max-width: 380px;
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--ink-secondary);
 }
 
@@ -1781,20 +1857,19 @@ select.field__input {
   font: inherit;
   font-size: 13px;
   cursor: pointer;
-  background: transparent;
+  background: var(--bg-trade);
   color: var(--ink);
-  border: 1px solid #B9AF9F;
+  border: none;
   border-radius: 999px;
   padding: 10px 18px;
   min-height: 44px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .lighting-btn[aria-current="true"],
 .lighting-btn--active {
   background: var(--ink);
   color: var(--bg-linen);
-  border-color: var(--ink);
 }
 
 /* Media caption (bottom of left column) */
@@ -1813,14 +1888,19 @@ select.field__input {
   gap: 40px;
 }
 
-/* ≤900px or reduced-motion: stack columns, remove sticky */
+/* ≤900px: stack columns, details first, remove sticky */
 @media (max-width: 900px) {
   .stone {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 0;
   }
+  .stone__details {
+    position: static;
+    order: -1;
+    padding-bottom: 56px;
+  }
+  .stone__media-col { order: 0; }
   .stone__lighting-nav { position: static; }
-  .stone__details { position: static; }
 }
 
 /* reduced-motion: only smooth scroll + reveals off; sticky stays */
@@ -2058,4 +2138,20 @@ html.js [data-split="hr"] {
 }
 html.js .record__steps { border-top: none; }
 html.js .record__step  { border-bottom: none; }
+
+/* ============================================================
+   VIEW TRANSITIONS — stone image carries index → stone page
+   ============================================================ */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+
+::view-transition-old(root) { animation: vt-leave 180ms ease-in both; }
+::view-transition-new(root) { animation: vt-arrive 360ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
+::view-transition-group(stone-hero) { animation-duration: 480ms; animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1); }
+::view-transition-image-pair(stone-hero) { overflow: clip; }
+::view-transition-old(stone-hero),
+::view-transition-new(stone-hero) { height: 100%; object-fit: cover; }
+
+@keyframes vt-leave  { to   { opacity: 0; } }
+@keyframes vt-arrive { from { opacity: 0; transform: translateY(16px); } }
 
