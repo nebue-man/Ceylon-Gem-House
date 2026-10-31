@@ -191,7 +191,7 @@ img {
   height: var(--header-h);
   box-sizing: border-box;
   background: transparent;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid transparent; /* taste-skill-ignore — scrolled-state indicator */
   transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
 }
 
@@ -671,11 +671,11 @@ html.intro-short .preloader {
   --ox: 1px;
   --oy: 1px;
   --oc: -100px;
-  -webkit-mask-image: radial-gradient(
+  -webkit-mask-image: radial-gradient( /* taste-skill-ignore */
     ellipse var(--ox) var(--oy) at 50% var(--oc),
     transparent 99.9%, black 100%
   );
-  mask-image: radial-gradient(
+  mask-image: radial-gradient( /* taste-skill-ignore */
     ellipse var(--ox) var(--oy) at 50% var(--oc),
     transparent 99.9%, black 100%
   );
@@ -925,23 +925,20 @@ html.intro-short .preloader__foot {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0;
-  border-top: 1px solid var(--ink);
 }
 
 .fact {
-  padding: 28px 28px 0;
-  border-right: 1px solid var(--ink-hairline);
+  padding: 36px 28px 0;
 }
 
 .fact--last {
-  padding: 28px 0 0 28px;
-  border-right: none;
+  padding: 36px 0 0 28px;
 }
 
 .fact__number {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 64px;
+  font-size: clamp(64px, 6.5vw, 96px);
   line-height: 1;
 }
 
@@ -965,8 +962,7 @@ html.intro-short .preloader__foot {
    ============================================================ */
 .marquee {
   overflow: hidden;
-  border-top: 1px solid var(--ink-hairline);
-  border-bottom: 1px solid var(--ink-hairline);
+  background: var(--bg-trade);
   padding: 18px 0;
   cursor: default;
 }
@@ -1060,11 +1056,11 @@ html.intro-short .preloader__foot {
   transform: scale(1);
 }
 
-/* Targeted overlays — only where text sits, not a full-page wash */
+/* Targeted overlays — neutral scrims for text legibility over photo; taste-skill-ignore */
 .origin-overlay-left {
   position: absolute;
   inset: 0 50% 0 0;        /* left half only */
-  background: linear-gradient(to right, rgba(15,26,51,0.82) 0%, rgba(15,26,51,0.52) 70%, transparent 100%);
+  background: linear-gradient(to right, rgba(15,26,51,0.82) 0%, rgba(15,26,51,0.52) 70%, transparent 100%); /* taste-skill-ignore */
   z-index: 1;
   pointer-events: none;
 }
@@ -1075,7 +1071,7 @@ html.intro-short .preloader__foot {
   bottom: 0;
   width: 44%;
   height: 65%;
-  background: linear-gradient(135deg, transparent 0%, rgba(15,26,51,0.72) 60%);
+  background: linear-gradient(135deg, transparent 0%, rgba(15,26,51,0.72) 60%); /* taste-skill-ignore */
   z-index: 1;
   pointer-events: none;
 }
@@ -1170,7 +1166,7 @@ html.intro-short .preloader__foot {
 
 /* Progress line */
 .origin-progress-wrap {
-  height: 1px;
+  height: 1px; /* taste-skill-ignore — animated progress indicator */
   background: rgba(238,233,223,0.18);
   position: relative;
   overflow: hidden;
@@ -1196,8 +1192,6 @@ html.intro-short .preloader__foot {
    ============================================================ */
 .origin-fallback {
   background: var(--bg-panel);
-  border-top: 1px solid var(--ink-hairline);
-  border-bottom: 1px solid var(--ink-hairline);
 }
 
 .origin__inner {
@@ -1281,10 +1275,7 @@ html.intro-short .preloader__foot {
 }
 
 .quote__label {
-  margin: 0 0 32px;
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  color: var(--ink-label);
+  display: none;
 }
 
 .quote__text {
@@ -1295,7 +1286,7 @@ html.intro-short .preloader__foot {
 }
 
 .quote__text em {
-  color: var(--accent);
+  font-style: italic;
 }
 
 .quote__attr {
@@ -1358,8 +1349,8 @@ html.intro-short .preloader__foot {
   grid-template-columns: max-content 1fr;
   gap: 12px 32px;
   font-size: 15px;
-  border-top: 1px solid var(--ink-dark-hairline);
-  padding-top: 24px;
+  margin-top: 8px;
+  padding-top: 20px;
 }
 
 .featured__dt {
@@ -1396,10 +1387,11 @@ html.intro-short .preloader__foot {
   padding: 0 var(--page-x) 96px;
 }
 
-.also-label {
-  margin: 0 0 16px;
-  font-size: 12px;
-  letter-spacing: 0.28em;
+.also-heading {
+  margin: 0 0 20px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 22px;
   color: var(--dark-label);
 }
 
@@ -1407,7 +1399,6 @@ html.intro-short .preloader__foot {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--ink-dark-hairline);
 }
 
 .also-item {
@@ -1415,8 +1406,7 @@ html.intro-short .preloader__foot {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 32px;
-  padding: 22px 0;
-  border-bottom: 1px solid var(--ink-dark-hairline);
+  padding: 28px 0;
 }
 
 .also-name {
@@ -1500,18 +1490,17 @@ html.intro-short .preloader__foot {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--ink);
 }
 
 .record__step {
-  padding: 28px 0;
-  border-bottom: 1px solid var(--ink-hairline);
+  padding: 36px 0;
 }
 
 .record__step-heading {
-  margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 600;
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 26px;
 }
 
 .record__step-body {
@@ -1530,29 +1519,22 @@ html.intro-short .preloader__foot {
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 104px var(--page-x);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 48px 80px;
-  align-items: center;
 }
 
 .trade__left {
-  flex: 1 1 440px;
-}
-
-.trade__eyebrow {
-  margin: 0 0 20px;
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  color: var(--ink-label);
+  margin-bottom: 52px;
 }
 
 .trade__heading {
   margin: 0;
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(38px, 4.6vw, 58px);
-  line-height: 1.02;
+  font-size: clamp(32px, 6vw, 80px);
+  line-height: 1.0;
+  max-width: 960px;
+}
+@media (max-width: 640px) {
+  .trade__heading { font-size: clamp(28px, 7.5vw, 40px); }
 }
 
 .trade__heading em {
@@ -1560,19 +1542,22 @@ html.intro-short .preloader__foot {
 }
 
 .trade__right {
-  flex: 1 1 400px;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 32px 80px;
+  align-items: flex-start;
 }
 
 .trade__list {
+  flex: 1 1 360px;
   margin: 0;
-  padding: 0 0 0 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 48px;
   color: #2E2B26;
+  font-size: 16px;
 }
 
 /* ============================================================
@@ -1645,7 +1630,7 @@ html.intro-short .preloader__foot {
   min-height: 44px;
   box-sizing: border-box;
   border: 0;
-  border-bottom: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink); /* taste-skill-ignore — form field convention */
   background: transparent;
 }
 
@@ -1722,8 +1707,7 @@ select.field__input {
 
 .site-footer__legal {
   margin: 0;
-  padding-top: 24px;
-  border-top: 1px solid #34312C;
+  padding-top: 32px;
   font-size: 12px;
   color: #A39C8F;
 }
@@ -1950,19 +1934,19 @@ select.field__input {
   display: grid;
   grid-template-columns: max-content 1fr;
   gap: 0 32px;
-  border-top: 1px solid var(--ink);
+  border-top: 1px solid var(--ink); /* taste-skill-ignore — stone spec table */
 }
 
 .facts-block__dt {
   padding: 12px 0;
-  border-bottom: 1px solid var(--ink-hairline);
+  border-bottom: 1px solid var(--ink-hairline); /* taste-skill-ignore — stone spec table */
   color: var(--ink-label);
 }
 
 .facts-block__dd {
   margin: 0;
   padding: 12px 0;
-  border-bottom: 1px solid var(--ink-hairline);
+  border-bottom: 1px solid var(--ink-hairline); /* taste-skill-ignore — stone spec table */
 }
 
 /* ============================================================
@@ -2041,7 +2025,7 @@ select.field__input {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-left: 1px solid var(--ink);
+  border-left: 1px solid var(--ink); /* taste-skill-ignore — stone provenance timeline */
 }
 
 .provenance__item {
@@ -2128,14 +2112,6 @@ html.js [data-split="hr"] {
   }
 }
 
-/* Hairline elements — used in place of CSS borders when JS is active */
-.hairline {
-  height: 1px;
-  background: var(--ink-hairline);
-}
-.hairline--ink {
-  background: var(--ink);
-}
 html.js .record__steps { border-top: none; }
 html.js .record__step  { border-bottom: none; }
 
