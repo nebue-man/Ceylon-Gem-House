@@ -756,23 +756,13 @@ function initHeroDive() {
   }, { passive: true });
 }
 
-// ─── Facts handoff: header switch ────────────────────────────────────
-// Facts is linen from the start; reveals fire via normal IO as elements
-// enter the viewport. Only the header class needs a trigger.
+// ─── Facts handoff: reveal init ──────────────────────────────────────
+// Facts is navy (dark-section); header stays white via data-theme="dark"
+// IO. Reveals register immediately; ScrollTrigger gates them until in view.
 function initFactsHandoff() {
   const factsEl = document.querySelector('[data-facts-gate]');
   if (!factsEl) return;
-
-  // Reveals register immediately — IO keeps them hidden until in view
   initFactsReveals();
-
-  // Header switches from hero-dark to body-dark once facts covers the nav
-  ScrollTrigger.create({
-    trigger: factsEl,
-    start: 'top 10%',
-    onEnter()     { document.documentElement.classList.add('facts-linen'); },
-    onLeaveBack() { document.documentElement.classList.remove('facts-linen'); },
-  });
 }
 
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────

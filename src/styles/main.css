@@ -221,27 +221,7 @@ img {
   border-color: rgba(238,233,223,0.5);
 }
 
-/* Handoff: once facts cap is ≥90% linen the header switches back to dark ink,
-   overriding the hero's dark-section IO which stays active until hero exits. */
-html.facts-linen .site-header--dark,
-html.facts-linen .site-header--scrolled.site-header--dark {
-  color: var(--ink);
-  background: var(--bg-linen);
-  border-bottom-color: var(--ink-hairline);
-}
-html.facts-linen .site-header--dark .logo__mark path,
-html.facts-linen .site-header--dark .badge__gem path {
-  stroke: var(--ink);
-}
-html.facts-linen .site-header--dark .logo__wordmark {
-  color: var(--ink);
-}
-html.facts-linen .site-header--dark .main-nav a {
-  color: var(--ink);
-}
-html.facts-linen .site-header--dark .main-nav__cta {
-  border-color: var(--ink);
-}
+/* facts-linen removed: facts is now navy, header stays white throughout */
 
 .site-header__inner {
   max-width: var(--max-w);
@@ -900,18 +880,16 @@ html.intro-short .preloader__foot {
 .btn-submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ============================================================
-   FACTS — oval-curved handoff from hero
+   FACTS — dark navy, continuous with origin section
    ============================================================ */
 .facts {
   position: relative;
   z-index: 2; /* sits above the sticky hero stage */
   margin-top: -20vh;
-  /* Default linen — JS overrides to --handoff-green for the scroll scrub */
-  background: var(--bg-linen);
+  background: var(--navy);
   padding-top: 72px;
   padding-bottom: 96px;
 }
-
 
 .facts__inner {
   max-width: var(--max-w);
@@ -938,6 +916,7 @@ html.intro-short .preloader__foot {
   font-family: var(--font-serif);
   font-size: clamp(64px, 6.5vw, 96px);
   line-height: 1;
+  color: var(--bg-linen);
 }
 
 .fact__number span {
@@ -947,12 +926,13 @@ html.intro-short .preloader__foot {
 .fact__body {
   margin: 14px 0 6px;
   font-size: 15px;
+  color: rgba(242, 237, 228, 0.75);
 }
 
 .fact__source {
   margin: 0;
   font-size: 12px;
-  color: var(--ink-label);
+  color: rgba(242, 237, 228, 0.45);
 }
 
 /* ============================================================
@@ -960,7 +940,7 @@ html.intro-short .preloader__foot {
    ============================================================ */
 .marquee {
   overflow: hidden;
-  background: var(--bg-trade);
+  background: var(--navy);
   padding: 18px 0;
   cursor: default;
 }
@@ -969,16 +949,13 @@ html.intro-short .preloader__foot {
   width: max-content;
   animation: marquee-scroll 36s linear infinite;
 }
-.marquee:hover .marquee__track {
-  animation-play-state: paused;
-}
 .marquee__text {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 40px;
   line-height: 1;
   white-space: nowrap;
-  color: var(--ink);
+  color: rgba(242, 237, 228, 0.5);
 }
 @keyframes marquee-scroll {
   from { transform: translateX(0); }
