@@ -908,9 +908,9 @@ html.intro-short .preloader__foot {
   margin-top: -20vh;
   /* Default linen — JS overrides to --handoff-green for the scroll scrub */
   background: var(--bg-linen);
-  /* Oval shape at top — solid cap, no mask (feathering lets hero sky bleed through) */
-  border-radius: 50% 50% 0 0 / 80px 80px 0 0;
-  padding-top: calc(20vh + 80px);
+  /* Oval shape at top — GSAP scrubs from 4px → 160px on entry; this is the resting value */
+  border-radius: 50% 50% 0 0 / 160px 160px 0 0;
+  padding-top: calc(20vh + 160px);
   padding-bottom: 96px;
 }
 

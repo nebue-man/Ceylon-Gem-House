@@ -738,7 +738,7 @@ function initHeroDive() {
 
     // Darken last 25% of dive (units 7.5–10) so green cap blends in
     if (heroDarken) {
-      tl.to(heroDarken, { opacity: 0.15, ease: 'none', duration: 2.5 }, 7.5);
+      tl.to(heroDarken, { opacity: 0.55, ease: 'none', duration: 2.5 }, 7.5);
     }
 
     heroDiveST = tl.scrollTrigger;
@@ -756,17 +756,19 @@ function initHeroDive() {
   }, { passive: true });
 }
 
-// ─── Facts cap colour scrub (I2 hand-off refinement) ────────────────
-// Scrubs facts background from paddy green (--handoff-green) to linen as
-// the section covers the viewport. Gates facts reveals until cap is ≥90% linen.
-// Header class 'facts-linen' overrides the hero's dark-section IO styling.
+// ─── Facts handoff: colour + oval growth (I5 emergence) ─────────────
+// Colour scrubs navy (pit dark) → paddy green → linen as facts covers the
+// viewport. Oval cap border-radius grows from 4 px (slit) → 160 px (dome)
+// as the section enters, driven by a separate ScrollTrigger.
+// Gates fact reveals until cap colour is ≥90% linen.
 function initFactsHandoff() {
   const factsEl = document.querySelector('[data-facts-gate]');
   if (!factsEl) return;
 
-  const cs = getComputedStyle(document.documentElement);
-  const green = cs.getPropertyValue('--handoff-green').trim() || '#54522B';
-  const linen = cs.getPropertyValue('--bg-linen').trim()       || '#F2EDE4';
+  const cs    = getComputedStyle(document.documentElement);
+  const navy  = cs.getPropertyValue('--navy').trim()         || '#0F1A33';
+  const green = cs.getPropertyValue('--handoff-green').trim()|| '#54522B';
+  const linen = cs.getPropertyValue('--bg-linen').trim()     || '#F2EDE4';
 
   let factsRevealsInited = false;
 
@@ -779,19 +781,33 @@ function initFactsHandoff() {
     }
   }
 
+  // Three-stop colour: navy (first 15% of travel) → green → linen
+  const colorTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: factsEl,
+      start: 'top bottom',
+      end:   'top top',
+      scrub: true,
+      onUpdate(self)  { updateCap(self.progress); },
+      onLeave()       { updateCap(1); },
+      onLeaveBack()   { updateCap(0); },
+    },
+  });
+  colorTl
+    .fromTo(factsEl, { backgroundColor: navy  }, { backgroundColor: green, ease: 'none', duration: 0.15 }, 0)
+    .to(    factsEl,                              { backgroundColor: linen, ease: 'none', duration: 0.85 }, 0.15);
+
+  // Oval cap: flat slit on entry → full dome by the time facts top is 40% down the viewport
   gsap.fromTo(factsEl,
-    { backgroundColor: green },
+    { borderRadius: '50% 50% 0 0 / 4px 4px 0 0' },
     {
-      backgroundColor: linen,
+      borderRadius: '50% 50% 0 0 / 160px 160px 0 0',
       ease: 'none',
       scrollTrigger: {
         trigger: factsEl,
         start: 'top bottom',
-        end: 'top top',
+        end:   'top 40%',
         scrub: true,
-        onUpdate(self)  { updateCap(self.progress); },
-        onLeave()       { updateCap(1); },
-        onLeaveBack()   { updateCap(0); },
       },
     }
   );
