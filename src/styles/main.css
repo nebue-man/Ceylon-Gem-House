@@ -439,14 +439,14 @@ img {
    on the <img> (image coordinates → object-fit cover crop math).
    ============================================================ */
 .hero {
-  /* 300vh scroll travel on desktop, 200vh on mobile */
-  height: 300vh;
+  /* 400vh scroll travel on desktop, 300vh on mobile — video scrub pacing */
+  height: 400vh;
   position: relative;
   /* Pull up by header height so hero is full-bleed from viewport top */
   margin-top: calc(-1 * var(--header-h));
 }
 @media (max-width: 900px) {
-  .hero { height: 200vh; }
+  .hero { height: 300vh; }
 }
 
 .hero__stage {

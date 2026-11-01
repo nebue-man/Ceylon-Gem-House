@@ -712,10 +712,12 @@ function initHeroDive() {
     };
   }
 
-  let heroDiveST = null;
+  let heroDiveST  = null;
+  let heroVideoST = null;
 
   function buildDive() {
-    if (heroDiveST) { heroDiveST.kill(); heroDiveST = null; }
+    if (heroDiveST)  { heroDiveST.kill();  heroDiveST  = null; }
+    if (heroVideoST) { heroVideoST.kill(); heroVideoST = null; }
     gsap.set([bgWrap, overlay], { clearProps: 'all' });
     if (colL) gsap.set([colL, colR], { clearProps: 'all' });
     if (heroDarken) gsap.set(heroDarken, { clearProps: 'opacity' });
@@ -734,18 +736,46 @@ function initHeroDive() {
 
     tl.to(overlay, { y: '-120vh', ease: 'none', duration: 4 }, 0);
     tl.to(bgWrap,  { y: '-20vh',  ease: 'none', duration: 10 }, 0);
-    tl.to(bgWrap,  { scale: 2.2, transformOrigin: origin, ease: 'none', duration: 8 }, 2);
+    tl.to(bgWrap,  { scale: 1.4, transformOrigin: origin, ease: 'none', duration: 8 }, 2);
     if (colL) {
       tl.to(colL, { xPercent: -100, ease: 'none', duration: 5 }, 3);
       tl.to(colR, { xPercent:  100, ease: 'none', duration: 5 }, 3);
     }
 
-    // Darken last 25% of dive (units 7.5–10) so green cap blends in
+    // Darken last 25% of dive so navy facts card blends in
     if (heroDarken) {
       tl.to(heroDarken, { opacity: 0.55, ease: 'none', duration: 2.5 }, 7.5);
     }
 
     heroDiveST = tl.scrollTrigger;
+
+    // Video scrub: scroll drives currentTime, stops at 82% to avoid
+    // repeating the final frame that matches The Pit origin section.
+    if (bgImg.tagName === 'VIDEO') {
+      const vid        = bgImg;
+      const endFraction = 0.82;
+
+      const setupVideoScrub = () => {
+        if (!vid.duration) return;
+        const endTime = vid.duration * endFraction;
+        heroVideoST = ScrollTrigger.create({
+          trigger: hero,
+          start:   'top top',
+          end:     'bottom bottom',
+          scrub:   true,
+          onUpdate(self) {
+            const t = self.progress * endTime;
+            // fastSeek (nearest keyframe) where supported for smoother scrub
+            if (vid.fastSeek) vid.fastSeek(t);
+            else              vid.currentTime = t;
+          },
+        });
+      };
+
+      // duration available once metadata is loaded (readyState ≥ 1)
+      if (vid.readyState >= 1) setupVideoScrub();
+      else vid.addEventListener('loadedmetadata', setupVideoScrub, { once: true });
+    }
   }
 
   buildDive();
