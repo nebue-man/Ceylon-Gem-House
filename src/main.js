@@ -294,6 +294,19 @@ function initReveals() {
     else if (type === 'accent') data = _setupAccent(el);
     else if (type === 'lines')  data = _setupLines(el);
 
+    // [data-reverse] — fade elements that animate in on enter and back on leaveBack
+    if ('reverse' in el.dataset && type === 'fade') {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(el, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: 'revealOut' });
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        onEnter:     () => tl.play(),
+        onLeaveBack: () => tl.reverse(),
+      });
+      return;
+    }
+
     ScrollTrigger.create({
       trigger: el,
       start: 'top 85%',
@@ -435,6 +448,10 @@ if (!reduced) {
       initReveals();
       initHeroDive();
       initFactsHandoff();
+      initStackedSheets();
+      initFeaturedReveal();
+      initStoneCrossfade();
+      ScrollTrigger.refresh();
     });
   }
 }
@@ -640,6 +657,9 @@ function initIntro(imageReady) {
       initReveals();
       initHeroDive();
       initFactsHandoff();
+      initStackedSheets();
+      initFeaturedReveal();
+      initStoneCrossfade();
       ScrollTrigger.refresh();
     });
   }
@@ -809,6 +829,146 @@ function initFactsHandoff() {
   initFactsReveals();
 }
 
+// ─── S1: Stacked sheet transitions ───────────────────────────────────
+// Desktop (≥900px pointer:fine) + no reduced-motion only.
+// Each pair: bottom section pins while top section scrolls in from below.
+// Bottom drifts y: 0→-50svh (power1.in); overlay darkens simultaneously.
+function initStackedSheets() {
+  if (reduced) return;
+  if (!window.matchMedia('(min-width: 900px) and (pointer: fine)').matches) return;
+
+  const svhPx = () => window.visualViewport?.height ?? window.innerHeight;
+
+  const pairs = [
+    { bottom: '.facts',  top: '.origin'   },
+    { bottom: '.quote',  top: '.featured' },
+    { bottom: '.record', top: '.trade'    },
+    { bottom: '.trade',  top: '.inquire'  },
+  ];
+
+  pairs.forEach(({ bottom: bSel, top: tSel }) => {
+    const bottomEl = document.querySelector(bSel);
+    const topEl    = document.querySelector(tSel);
+    if (!bottomEl || !topEl) return;
+
+    const overlay = bottomEl.querySelector('.sheet-overlay');
+
+    // Sticky replaces GSAP pin: no pin-spacers means no circular-spacer bug.
+    // The leaving section sticks at viewport top; the arriving section (higher
+    // z-index) slides over it naturally. Release when arriving fully covers.
+    bottomEl.style.position = 'sticky';
+    bottomEl.style.top = '0px';
+    ScrollTrigger.create({
+      trigger:     topEl,
+      start:       'top top',
+      onEnter:     () => { bottomEl.style.position = ''; bottomEl.style.top = ''; },
+      onLeaveBack: () => { bottomEl.style.position = 'sticky'; bottomEl.style.top = '0px'; },
+    });
+
+    // Drift bottom section upward as top arrives (power1.in = accelerates away)
+    gsap.to(bottomEl, {
+      y: () => svhPx() * -0.5,
+      ease: 'power1.in',
+      scrollTrigger: {
+        trigger: topEl,
+        start: 'top bottom',
+        end:   'top top',
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    // Darken the leaving sheet as the arriving sheet covers it
+    if (overlay) {
+      gsap.to(overlay, {
+        opacity: 0.22,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: topEl,
+          start: 'top bottom',
+          end:   'top top',
+          scrub: true,
+        },
+      });
+    }
+
+    // Add seam class to arriving section for subtle shadow at its top edge
+    topEl.classList.add('sheet--arriving');
+  });
+}
+
+// ─── S2: Featured image clip-reveal + drift ───────────────────────────
+// Desktop only. Opens from centre on arrival; image drifts in from 1.12×.
+function initFeaturedReveal() {
+  if (reduced) return;
+  if (!window.matchMedia('(min-width: 900px) and (pointer: fine)').matches) return;
+
+  const section = document.querySelector('.featured');
+  const media   = section?.querySelector('.featured__media');
+  if (!media) return;
+
+  // Clip-path opens from centre outward as section enters viewport
+  gsap.fromTo(media,
+    { clipPath: 'inset(0 48% 0 48%)' },
+    {
+      clipPath: 'inset(0 0% 0 0%)',
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 80%',
+        end:   'top 20%',
+        scrub: 1.2,
+      },
+    }
+  );
+
+  // Image drifts in from slight zoom, settling to natural scale
+  const img = media.querySelector('.featured__img');
+  if (img) {
+    gsap.fromTo(img,
+      { scale: 1.12 },
+      {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end:   'top top',
+          scrub: true,
+        },
+      }
+    );
+  }
+}
+
+// ─── S2: Stone page — Daylight → Warm-light crossfade ────────────────
+// Scroll-scrubs a warm amber overlay over stone-frame-0 as stone-frame-1
+// enters the viewport. Label switches at 50% progress.
+function initStoneCrossfade() {
+  if (reduced) return;
+
+  const frame0  = document.getElementById('stone-frame-0');
+  const frame1  = document.getElementById('stone-frame-1');
+  const overlay = frame0?.querySelector('.stone__warm-overlay');
+  const label   = document.getElementById('stone-frame-0-label');
+  if (!overlay || !frame1) return;
+
+  gsap.to(overlay, {
+    opacity: 1,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: frame1,
+      start: 'top 85%',
+      end:   'top 15%',
+      scrub: 1.2,
+      onUpdate: (self) => {
+        if (label) label.textContent = self.progress >= 0.5 ? 'Warm light' : 'Daylight';
+      },
+      onLeaveBack: () => { if (label) label.textContent = 'Daylight'; },
+    },
+  });
+}
+
 // ─── Stone page: details column sticky-top (fits-at-either-edge) ─────
 (function () {
   const details = document.querySelector('.stone__details');
@@ -900,6 +1060,13 @@ function initFactsHandoff() {
   const LABELS  = ['1 of 5', '2 of 5', '3 of 5', '4 of 5', '5 of 5'];
   let currentStep = -1;
 
+  // Walk the offsetParent chain once for the document-top of pin.
+  // pin.offsetTop alone would give the offset relative to .origin (its
+  // nearest positioned ancestor since S1 added position:relative to .origin),
+  // making the scroll formula treat scrollY as already past the section.
+  let pinDocTop = 0;
+  for (let el = pin; el; el = el.offsetParent) pinDocTop += el.offsetTop;
+
   function applyStep(step, intra) {
     if (step !== currentStep) {
       imgs.forEach((el, i)   => el.classList.toggle('is-active', i === step));
@@ -908,18 +1075,23 @@ function initFactsHandoff() {
       if (counter) counter.textContent = LABELS[step];
       currentStep = step;
     }
+    // S2: scroll-linked parallax drift on the active image (+6svh → -6svh)
+    const activeImg = imgs[step];
+    if (activeImg) {
+      const svhVal = window.visualViewport?.height ?? window.innerHeight;
+      activeImg.style.setProperty('--origin-drift-y', `${(0.06 - intra * 0.12) * svhVal}px`);
+    }
     if (bar) bar.style.transform = `scaleX(${intra})`;
   }
 
   updateOriginPin = function (scrollY) {
     if (window.innerWidth < 900) return;
     const viewH    = window.innerHeight;
-    const pinTop   = pin.offsetTop;
     const pinH     = pin.offsetHeight;
     const scrollable = pinH - viewH;
     if (scrollable <= 0) return;
 
-    const raw      = Math.max(0, Math.min(1, (scrollY - pinTop) / scrollable));
+    const raw      = Math.max(0, Math.min(1, (scrollY - pinDocTop) / scrollable));
     const rawStep  = raw * STEPS;
     const step     = Math.min(STEPS - 1, Math.floor(rawStep));
     const intra    = Math.min(1, rawStep - step);
@@ -929,9 +1101,8 @@ function initFactsHandoff() {
   btns.forEach((btn, i) => {
     btn.addEventListener('click', () => {
       const viewH    = window.innerHeight;
-      const pinTop   = pin.offsetTop;
       const scrollable = pin.offsetHeight - viewH;
-      const targetY  = pinTop + scrollable * ((i + 0.05) / STEPS);
+      const targetY  = pinDocTop + scrollable * ((i + 0.05) / STEPS);
       if (lenis) { lenis.scrollTo(targetY, { duration: 1.2 }); }
       else { window.scrollTo({ top: targetY, behavior: 'smooth' }); }
     });

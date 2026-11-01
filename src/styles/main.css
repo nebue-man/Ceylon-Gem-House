@@ -926,6 +926,64 @@ html.intro-short .preloader__foot {
 }
 
 /* ============================================================
+   S1 — STACKED SHEET SYSTEM
+   Desktop (≥900px, pointer:fine, no reduced-motion) only.
+   JS guards the pin/drift animations; CSS handles z-index,
+   min-height, and the overlay that darkens the leaving sheet.
+   ============================================================ */
+.sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--navy);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Visible seam on the arriving section — functional, not decorative */
+.sheet--arriving {
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.10);
+}
+
+@media (min-width: 900px) and (pointer: fine) {
+  /* Leaving sheets: min-height ensures scroll room + vertical centering */
+  .facts  {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .quote  {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .record {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .trade {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Stacking order: each arriving section rises over the leaving one */
+  .marquee  { position: relative; z-index: 3; }
+  .origin   { position: relative; z-index: 3; }
+  .quote    { position: relative; z-index: 2; background: var(--bg-linen); }
+  .featured { position: relative; z-index: 3; }
+  .record   { position: relative; z-index: 2; background: var(--bg-linen); }
+  .trade    { position: relative; z-index: 3; }
+  .inquire  { position: relative; z-index: 4; background: var(--bg-linen); }
+}
+
+/* ============================================================
    MARQUEE STRIP
    ============================================================ */
 .marquee {
@@ -1012,13 +1070,14 @@ html.intro-short .preloader__foot {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transform: scale(1.04);
-  transition: opacity 1.2s var(--ease-out), transform 1.6s var(--ease-out);
+  scale: 1.04;
+  translate: 0px var(--origin-drift-y, 0px);
+  transition: opacity 1.2s var(--ease-out), scale 1.6s var(--ease-out);
 }
 
 .origin-img.is-active {
   opacity: 1;
-  transform: scale(1);
+  scale: 1;
 }
 
 /* Targeted overlays — neutral scrims for text legibility over photo; taste-skill-ignore */
@@ -1278,12 +1337,18 @@ html.intro-short .preloader__foot {
   align-items: center;
 }
 
-.featured__img {
+/* Wrapper added for S2 clip-reveal — inherits the flex sizing from __img */
+.featured__media {
   flex: 1 1 520px;
   min-width: 0;
+  overflow: hidden;
+}
+
+.featured__img {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+  display: block;
 }
 
 .featured__details {
@@ -1826,6 +1891,16 @@ select.field__input {
   margin: 40px 0 0;
   font-size: 12px;
   color: var(--ink-label);
+}
+
+/* S2: Warm-light crossfade overlay — JS scrubs opacity 0→1 as frame-1 enters */
+.stone__warm-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(180,130,60,0.22) 0%, rgba(160,100,30,0.28) 100%); /* taste-skill-ignore */
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
 }
 
 /* Details column (right — sticky, JS sets --stone-details-top via ResizeObserver) */
