@@ -765,9 +765,7 @@ function initHeroDive() {
           scrub:   true,
           onUpdate(self) {
             const t = self.progress * endTime;
-            // fastSeek (nearest keyframe) where supported for smoother scrub
-            if (vid.fastSeek) vid.fastSeek(t);
-            else              vid.currentTime = t;
+            vid.currentTime = t;
           },
         });
       };
