@@ -608,16 +608,6 @@ img {
   z-index: 3;
 }
 
-/* Darkening overlay — GSAP animates opacity 0→0.15 in the last 25% of dive */
-.hero__darken {
-  position: absolute;
-  inset: 0;
-  background: #000;
-  opacity: 0;
-  z-index: 1; /* above bg-wrap, below navy cols (z:2) and overlay (z:3) */
-  pointer-events: none;
-}
-
 /* Reduced motion: static hero, no sticky, no scroll travel */
 @media (prefers-reduced-motion: reduce) {
   .hero { height: auto; }

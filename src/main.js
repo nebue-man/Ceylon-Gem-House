@@ -661,9 +661,8 @@ function initHeroDive() {
   const bgWrap  = hero.querySelector('.hero__bg-wrap');
   const bgImg   = hero.querySelector('.hero__bg-img');
   const overlay = hero.querySelector('.hero__overlay');
-  const colL      = hero.querySelector('.hero__col--l');
-  const colR      = hero.querySelector('.hero__col--r');
-  const heroDarken = hero.querySelector('.hero__darken');
+  const colL = hero.querySelector('.hero__col--l');
+  const colR = hero.querySelector('.hero__col--r');
   if (!stage || !bgWrap || !bgImg || !overlay) return;
 
   const focusX = parseFloat(bgImg.dataset.focusX) || 0.54;
@@ -720,7 +719,6 @@ function initHeroDive() {
     if (heroVideoST) { heroVideoST.kill(); heroVideoST = null; }
     gsap.set([bgWrap, overlay], { clearProps: 'all' });
     if (colL) gsap.set([colL, colR], { clearProps: 'all' });
-    if (heroDarken) gsap.set(heroDarken, { clearProps: 'opacity' });
 
     const focus  = computeFocus();
     const origin = focus ? focus.origin : `${focusX * 100}% ${focusY * 100}%`;
@@ -742,18 +740,13 @@ function initHeroDive() {
       tl.to(colR, { xPercent:  100, ease: 'none', duration: 5 }, 3);
     }
 
-    // Darken last 25% of dive so navy facts card blends in
-    if (heroDarken) {
-      tl.to(heroDarken, { opacity: 0.55, ease: 'none', duration: 2.5 }, 7.5);
-    }
-
     heroDiveST = tl.scrollTrigger;
 
     // Video scrub: scroll drives currentTime, stops at 82% to avoid
     // repeating the final frame that matches The Pit origin section.
     if (bgImg.tagName === 'VIDEO') {
       const vid        = bgImg;
-      const endFraction = 0.82;
+      const endFraction = 0.49;
 
       const setupVideoScrub = () => {
         if (!vid.duration) return;
@@ -794,6 +787,25 @@ function initHeroDive() {
 function initFactsHandoff() {
   const factsEl = document.querySelector('[data-facts-gate]');
   if (!factsEl) return;
+
+  // Facts panel rises up as it enters the viewport after the hero scroll.
+  // Skipped under prefers-reduced-motion (facts starts visible, no travel).
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.fromTo(factsEl,
+      { y: 72 },
+      {
+        y: 0,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: factsEl,
+          start: 'top bottom',
+          end:   'top 55%',
+          scrub: 0.8,
+        },
+      }
+    );
+  }
+
   initFactsReveals();
 }
 
