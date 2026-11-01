@@ -417,7 +417,11 @@ function initFactsReveals() {
 
 // ─── Init ────────────────────────────────────────────────────────────
 const heroBgImg  = document.querySelector('.hero__bg-img');
-const imageReady = heroBgImg ? heroBgImg.decode().catch(() => {}) : Promise.resolve();
+const imageReady = heroBgImg
+  ? heroBgImg.tagName === 'VIDEO'
+    ? new Promise(r => { heroBgImg.readyState >= 2 ? r() : heroBgImg.addEventListener('canplay', r, { once: true }); })
+    : heroBgImg.decode().catch(() => {})
+  : Promise.resolve();
 
 if (!reduced) {
   const hasIntro =
@@ -669,8 +673,8 @@ function initHeroDive() {
   // accounting for object-fit:cover crop. On mobile also returns the
   // object-position value that centres the pit within the viewport.
   function computeFocus() {
-    const iW = bgImg.naturalWidth;
-    const iH = bgImg.naturalHeight;
+    const iW = bgImg.naturalWidth  || bgImg.videoWidth;
+    const iH = bgImg.naturalHeight || bgImg.videoHeight;
     const sW = stage.offsetWidth;
     const sH = stage.offsetHeight;
     if (!iW || !iH || !sW || !sH) return null;
