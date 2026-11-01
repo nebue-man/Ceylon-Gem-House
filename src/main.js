@@ -1060,12 +1060,18 @@ function initStoneCrossfade() {
   const LABELS  = ['1 of 5', '2 of 5', '3 of 5', '4 of 5', '5 of 5'];
   let currentStep = -1;
 
-  // Walk the offsetParent chain once for the document-top of pin.
-  // pin.offsetTop alone would give the offset relative to .origin (its
-  // nearest positioned ancestor since S1 added position:relative to .origin),
-  // making the scroll formula treat scrollY as already past the section.
-  let pinDocTop = 0;
-  for (let el = pin; el; el = el.offsetParent) pinDocTop += el.offsetTop;
+  // Compute pin's document-top from getBoundingClientRect so it always
+  // reflects the current layout (font-swap reflows, sticky layout etc.).
+  // Cached at first use; invalidated on resize so the click handler stays
+  // accurate after orientation changes.
+  let pinDocTop = -1;
+  function getPinDocTop() {
+    if (pinDocTop < 0) pinDocTop = pin.getBoundingClientRect().top + window.scrollY;
+    return pinDocTop;
+  }
+  // Invalidate on resize and after fonts load so font-swap reflows don't stale the value.
+  window.addEventListener('resize', () => { pinDocTop = -1; }, { passive: true });
+  document.fonts.ready.then(() => { pinDocTop = -1; });
 
   function applyStep(step, intra) {
     if (step !== currentStep) {
@@ -1091,7 +1097,7 @@ function initStoneCrossfade() {
     const scrollable = pinH - viewH;
     if (scrollable <= 0) return;
 
-    const raw      = Math.max(0, Math.min(1, (scrollY - pinDocTop) / scrollable));
+    const raw      = Math.max(0, Math.min(1, (scrollY - getPinDocTop()) / scrollable));
     const rawStep  = raw * STEPS;
     const step     = Math.min(STEPS - 1, Math.floor(rawStep));
     const intra    = Math.min(1, rawStep - step);
@@ -1102,7 +1108,7 @@ function initStoneCrossfade() {
     btn.addEventListener('click', () => {
       const viewH    = window.innerHeight;
       const scrollable = pin.offsetHeight - viewH;
-      const targetY  = pinDocTop + scrollable * ((i + 0.05) / STEPS);
+      const targetY  = getPinDocTop() + scrollable * ((i + 0.05) / STEPS);
       if (lenis) { lenis.scrollTo(targetY, { duration: 1.2 }); }
       else { window.scrollTo({ top: targetY, behavior: 'smooth' }); }
     });
