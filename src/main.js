@@ -854,15 +854,18 @@ function initStackedSheets() {
     const overlay = bottomEl.querySelector('.sheet-overlay');
 
     // Sticky replaces GSAP pin: no pin-spacers means no circular-spacer bug.
-    // The leaving section sticks at viewport top; the arriving section (higher
-    // z-index) slides over it naturally. Release when arriving fully covers.
+    // top offset = min(0, viewH - sectionH) so the leaving section only sticks
+    // after the user has scrolled through its full content; sections that are
+    // exactly 100svh get top:0 and sections taller than the viewport get a
+    // negative top so the bottom content is reachable before sticking starts.
+    const stickyTop = () => `${Math.min(0, window.innerHeight - bottomEl.offsetHeight)}px`;
     bottomEl.style.position = 'sticky';
-    bottomEl.style.top = '0px';
+    bottomEl.style.top = stickyTop();
     ScrollTrigger.create({
       trigger:     topEl,
       start:       'top top',
       onEnter:     () => { bottomEl.style.position = ''; bottomEl.style.top = ''; },
-      onLeaveBack: () => { bottomEl.style.position = 'sticky'; bottomEl.style.top = '0px'; },
+      onLeaveBack: () => { bottomEl.style.position = 'sticky'; bottomEl.style.top = stickyTop(); },
     });
 
     // Drift bottom section upward as top arrives (power1.in = accelerates away)
