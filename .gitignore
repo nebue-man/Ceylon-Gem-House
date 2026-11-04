@@ -4,3 +4,20 @@ dist/
 *before-*.png
 *after-*.png
 .env
+
+# Workspace / QA artefacts
+.DS_Store
+public/.DS_Store
+public/img/.DS_Store
+qa/
+screenshots/
+.taste-skill/
+.agents/
+.claude/
+skills-lock.json
+*.png
+lh-*.json
+PLAN-*.md
+era-homepage-breakdown.md
+i1-*.png
+i2-*.png
