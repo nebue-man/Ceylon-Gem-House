@@ -14,7 +14,7 @@
 <link rel="canonical" href="%%SITE_URL%%/">
 <link rel="preload" href="/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="/img/webp/paddy-1600.webp" imagesrcset="/img/webp/paddy-800.webp 800w, /img/webp/paddy-1600.webp 1600w, /img/webp/paddy-2400.webp 2400w" imagesizes="100vw">
+<link rel="preload" as="image" href="/img/webp/sapphire-1600.webp" imagesrcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" imagesizes="(max-width: 900px) 100vw, 58vw">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/src/styles/main.css">
@@ -38,31 +38,24 @@
 
 <!--HEADER-->
 
-<!-- Hero (I2: full-screen paddy dive, ~300vh, sticky stage) -->
+<!-- Hero: split screen — editorial text left, sapphire right -->
 <section id="top" class="hero" data-theme="dark">
-  <div class="hero__stage">
 
-    <!-- Full-bleed background: outer wrap = I3 intro scale; inner wrap = I2 dive transforms -->
-    <div class="hero__reveal-wrap">
-    <div class="hero__bg-wrap">
-      <video class="hero__bg-img" muted playsinline preload="auto" aria-hidden="true"
-             data-focus-x="0.54" data-focus-y="0.70">
-        <source src="/img/Sri%20Lankan%20Gem%20Pit.mp4" type="video/mp4">
-      </video>
-    </div>
-    </div>
-
-    <!-- Bottom-left text overlay -->
-    <div class="hero__overlay">
-      <h1 class="hero__heading">Formed in<br>Sri Lanka.</h1>
-      <a href="stone.html" class="btn-hero-primary">View the stones</a>
-      <p class="hero__img-caption" aria-hidden="true">AI concept video</p>
-    </div>
-
-    <!-- Bottom-right location tag -->
-    <p class="hero__detail" aria-hidden="true">Ratnapura · Sri Lanka</p>
-
+  <div class="hero__left">
+    <p class="hero__kicker">Blue sapphires · Sri Lanka</p>
+    <h1 class="hero__heading">Formed in<br>Sri Lanka.</h1>
+    <p class="hero__sub">Documented from pit to seal — laboratory report, provenance record and NGJA export seal included.</p>
+    <a href="stone.html" class="btn-hero-primary">View the stones</a>
+    <p class="hero__detail">Ratnapura · reply within [24] h</p>
   </div>
+
+  <div class="hero__right">
+    <picture>
+      <source type="image/webp" srcset="/img/webp/sapphire-800.webp 800w, /img/webp/sapphire-1600.webp 1600w, /img/webp/sapphire-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 58vw">
+      <img class="hero__stone-img" src="/img/sapphire.jpg" alt="Blue sapphire oval, Ratnapura origin, Sri Lanka" width="1600" height="900">
+    </picture>
+  </div>
+
 </section>
 
 <!-- Facts — dark navy, continuous with origin -->

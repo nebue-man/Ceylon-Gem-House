@@ -429,7 +429,7 @@ function initFactsReveals() {
 }
 
 // ─── Init ────────────────────────────────────────────────────────────
-const heroBgImg  = document.querySelector('.hero__bg-img');
+const heroBgImg  = document.querySelector('.hero__bg-img') || document.querySelector('.hero__stone-img');
 const imageReady = heroBgImg
   ? heroBgImg.tagName === 'VIDEO'
     ? new Promise(r => { heroBgImg.readyState >= 2 ? r() : heroBgImg.addEventListener('canplay', r, { once: true }); })
@@ -453,38 +453,42 @@ if (!reduced) {
 }
 
 // ─── Hero entrance animation ─────────────────────────────────────────
-// Video blooms in (scale 1.04 → 1, opacity 0 → 1) while heading words
-// stagger up. Return visits use compressed durations.
+// Stone image blooms in (scale 1.04 → 1) while left-panel text
+// staggers up word by word. Return visits use compressed durations.
 function initHeroEntrance(imageReady) {
-  const bgImg   = document.querySelector('.hero__bg-img');
-  const overlay = document.querySelector('.hero__overlay');
-  const heading = overlay?.querySelector('.hero__heading');
-  const cta     = overlay?.querySelector('.btn-hero-primary');
-  const caption = overlay?.querySelector('.hero__img-caption');
-  if (!bgImg || !overlay) return;
+  const stoneImg = document.querySelector('.hero__stone-img');
+  const heading  = document.querySelector('.hero__heading');
+  const kicker   = document.querySelector('.hero__kicker');
+  const sub      = document.querySelector('.hero__sub');
+  const cta      = document.querySelector('.btn-hero-primary');
+  const detail   = document.querySelector('.hero__detail');
+  if (!heading) return;
 
   let isReturn = false;
   try { isReturn = !!sessionStorage.getItem('cghVisited'); } catch(e) {}
 
-  // Immediate hidden state — GSAP takes over from CSS .cgh-intro rules
   gsap.set(header, { opacity: 0 });
-  gsap.set(bgImg,  { opacity: 0, scale: 1.04, transformOrigin: '50% 50%' });
+  if (stoneImg) gsap.set(stoneImg, { opacity: 0, scale: 1.04, transformOrigin: '50% 50%' });
 
+  // Split heading into words; keep other elements as atomic units
   let splitWords = null;
   if (heading) {
     splitWords = new SplitText(heading, { type: 'words' });
-    gsap.set(splitWords.words, { y: 24, opacity: 0 });
+    gsap.set(splitWords.words, { y: 20, opacity: 0 });
   }
-  if (cta)     gsap.set(cta,     { opacity: 0 });
-  if (caption) gsap.set(caption, { opacity: 0 });
+  const textEls = [kicker, sub, cta, detail].filter(Boolean);
+  gsap.set(textEls, { y: 16, opacity: 0 });
 
   Promise.all([imageReady, document.fonts.ready]).then(() => {
     document.documentElement.classList.remove('cgh-intro');
 
-    const dur    = isReturn ? 0.5  : 1.0;
-    const wDly   = isReturn ? 0.15 : 0.45;
-    const wDur   = isReturn ? 0.4  : 0.6;
-    const wStgr  = isReturn ? 0.05 : 0.08;
+    const imgDur = isReturn ? 0.6  : 1.1;
+    const wDly   = isReturn ? 0.1  : 0.3;
+    const wDur   = isReturn ? 0.35 : 0.55;
+    const wStgr  = isReturn ? 0.04 : 0.07;
+    const tDly   = isReturn ? 0.2  : 0.4;
+    const tDur   = isReturn ? 0.35 : 0.5;
+    const tStgr  = isReturn ? 0.05 : 0.09;
 
     const tl = gsap.timeline({
       onComplete() {
@@ -499,13 +503,18 @@ function initHeroEntrance(imageReady) {
       },
     });
 
-    tl.to(bgImg, {
-      opacity: 1, scale: 1,
-      duration: dur * 1.2, ease: 'power3.out',
-    }, 0);
+    // Stone image blooms in
+    if (stoneImg) {
+      tl.to(stoneImg, {
+        opacity: 1, scale: 1,
+        duration: imgDur, ease: 'power3.out',
+      }, 0);
+    }
 
-    tl.to(header, { opacity: 1, duration: 0.4, ease: 'power2.out' }, dur * 0.25);
+    // Header fades in
+    tl.to(header, { opacity: 1, duration: 0.4, ease: 'power2.out' }, imgDur * 0.2);
 
+    // Heading words stagger up
     if (splitWords) {
       tl.to(splitWords.words, {
         y: 0, opacity: 1,
@@ -514,8 +523,14 @@ function initHeroEntrance(imageReady) {
       }, wDly);
     }
 
-    if (cta)     tl.to(cta,     { opacity: 1, duration: 0.4, ease: 'power2.out' }, wDly + wDur * 0.7);
-    if (caption) tl.to(caption, { opacity: 1, duration: 0.3, ease: 'none' },       wDly + wDur + 0.1);
+    // Remaining text elements stagger in
+    if (textEls.length) {
+      tl.to(textEls, {
+        y: 0, opacity: 1,
+        duration: tDur, stagger: tStgr, ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      }, tDly);
+    }
   });
 }
 
