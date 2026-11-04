@@ -437,12 +437,8 @@ const imageReady = heroBgImg
   : Promise.resolve();
 
 if (!reduced) {
-  const hasIntro =
-    document.documentElement.classList.contains('intro-full') ||
-    document.documentElement.classList.contains('intro-short');
-
-  if (hasIntro) {
-    initIntro(imageReady);
+  if (document.documentElement.classList.contains('cgh-intro')) {
+    initHeroEntrance(imageReady);
   } else {
     Promise.all([document.fonts.ready, imageReady]).then(() => {
       initReveals();
@@ -456,215 +452,71 @@ if (!reduced) {
   }
 }
 
-// ─── Intro animation (I3) ────────────────────────────────────────────
-function initIntro(imageReady) {
-  const preloader  = document.getElementById('preloader');
-  if (!preloader) return;
+// ─── Hero entrance animation ─────────────────────────────────────────
+// Video blooms in (scale 1.04 → 1, opacity 0 → 1) while heading words
+// stagger up. Return visits use compressed durations.
+function initHeroEntrance(imageReady) {
+  const bgImg   = document.querySelector('.hero__bg-img');
+  const overlay = document.querySelector('.hero__overlay');
+  const heading = overlay?.querySelector('.hero__heading');
+  const cta     = overlay?.querySelector('.btn-hero-primary');
+  const caption = overlay?.querySelector('.hero__img-caption');
+  if (!bgImg || !overlay) return;
 
-  const isShort    = document.documentElement.classList.contains('intro-short');
-  const bgEl       = preloader.querySelector('.preloader__bg');
-  const content    = preloader.querySelector('.preloader__content');
-  const rimSvg     = document.getElementById('preloader-rim-svg');
-  const rimEl      = document.getElementById('preloader-rim-el');
-  const skipBtn    = preloader.querySelector('.preloader__skip');
-  const revealWrap = document.querySelector('.hero__reveal-wrap');
+  let isReturn = false;
+  try { isReturn = !!sessionStorage.getItem('cghVisited'); } catch(e) {}
 
-  const W      = window.innerWidth;
-  const H      = window.innerHeight;
-  const mobile = W < 600;
-
-  let skipApplied = false;
-  let handOffDone = false;
-
-  // Oval dimensions in px (derived from vw/vh at this viewport)
-  const INIT_OX = W * (mobile ? 0.35 : 0.11);
-  const INIT_OC = H * 1.25;
-  const RISE_OX = W * (mobile ? 0.45 : 0.17);
-  const RISE_OC = H * 0.55;
-  const DIVE_OX = W * 1.7; // exceeds viewport width → covers screen
-
-  const ovalDur = isShort ? 0.8  : 1.5;
-  const diveDur = isShort ? 1.0  : 2.4;
-
-  // ── Lock scroll ────────────────────────────────────────────────
-  if (lenis) lenis.stop();
-  document.documentElement.style.overflow = 'hidden';
-
-  // ── Hide header until hand-off ─────────────────────────────────
+  // Immediate hidden state — GSAP takes over from CSS .cgh-intro rules
   gsap.set(header, { opacity: 0 });
+  gsap.set(bgImg,  { opacity: 0, scale: 1.04, transformOrigin: '50% 50%' });
 
-  // ── Hero reveal-wrap: scale 0.8 → 1 during dive ───────────────
-  if (revealWrap) gsap.set(revealWrap, { scale: 0.8, transformOrigin: '50% 50%' });
-
-  // ── Oval state — plain object animated by GSAP ─────────────────
-  const ov = { ox: INIT_OX, oy: INIT_OX / 1.3, oc: INIT_OC };
-
-  function applyOval() {
-    if (!bgEl) return;
-    bgEl.style.setProperty('--ox', ov.ox.toFixed(2) + 'px');
-    bgEl.style.setProperty('--oy', ov.oy.toFixed(2) + 'px');
-    bgEl.style.setProperty('--oc', ov.oc.toFixed(2) + 'px');
-    if (rimEl && rimSvg) {
-      rimEl.setAttribute('rx', ov.ox.toFixed(1));
-      rimEl.setAttribute('ry', ov.oy.toFixed(1));
-      rimEl.setAttribute('cx', ((rimSvg.clientWidth || W) / 2).toFixed(1));
-      rimEl.setAttribute('cy', ov.oc.toFixed(1));
-    }
+  let splitWords = null;
+  if (heading) {
+    splitWords = new SplitText(heading, { type: 'words' });
+    gsap.set(splitWords.words, { y: 24, opacity: 0 });
   }
-  applyOval(); // set initial below-screen position
+  if (cta)     gsap.set(cta,     { opacity: 0 });
+  if (caption) gsap.set(caption, { opacity: 0 });
 
-  const master = gsap.timeline({ paused: true });
+  Promise.all([imageReady, document.fonts.ready]).then(() => {
+    document.documentElement.classList.remove('cgh-intro');
 
-  // ──────────────────────────────────────────────────────────────
-  // Full intro sequence
-  // ──────────────────────────────────────────────────────────────
-  if (!isShort) {
-    const mark = preloader.querySelector('.preloader__mark');
-    const subL = preloader.querySelector('.preloader__sub--l');
-    const subR = preloader.querySelector('.preloader__sub--r');
-    const wm   = preloader.querySelector('.preloader__wordmark');
-    const acc  = preloader.querySelector('.preloader__accent');
-    const foot = preloader.querySelector('.preloader__foot');
-    const bar  = preloader.querySelector('.preloader__bar');
+    const dur    = isReturn ? 0.5  : 1.0;
+    const wDly   = isReturn ? 0.15 : 0.45;
+    const wDur   = isReturn ? 0.4  : 0.6;
+    const wStgr  = isReturn ? 0.05 : 0.08;
 
-    // Step 1 — Text reveals
-    const textTl = gsap.timeline();
-    if (mark) textTl.to(mark, { opacity: 1, duration: 0.5, ease: 'revealOut' }, 0);
-    if (subL) textTl.to(subL, { opacity: 1, duration: 0.6, ease: 'revealOut' }, 0.1);
-    if (subR) textTl.to(subR, { opacity: 1, duration: 0.6, ease: 'revealOut' }, 0.2);
-
-    if (wm) {
-      const wSplit = new SplitText(wm, { type: 'chars,words' });
-      gsap.set(wm, { opacity: 1 });
-      gsap.set(wSplit.chars, {
-        transformPerspective: 800, opacity: 0, yPercent: 50, rotateY: 90,
-      });
-      textTl.to(wSplit.chars, {
-        opacity: 1, yPercent: 0, rotateY: 0,
-        duration: 1.0, stagger: 0.04, ease: 'revealOut',
-        clearProps: 'transform,opacity',
-      }, 0.15);
-    }
-
-    if (acc) {
-      const aSplit = new SplitText(acc, { type: 'chars,words', aria: 'none' });
-      gsap.set(acc, { opacity: 1 });
-      gsap.set(aSplit.chars, {
-        transformPerspective: 800, opacity: 0, rotateX: 90, x: '3rem', transformOrigin: '50% 100%',
-      });
-      textTl.to(aSplit.chars, {
-        opacity: 1, rotateX: 0, x: 0,
-        duration: 0.9, stagger: 0.05, ease: 'revealOut',
-        clearProps: 'transform,opacity',
-      }, 0.4);
-    }
-
-    if (foot) textTl.to(foot, { opacity: 1, duration: 0.5, ease: 'revealOut' }, 0.5);
-    master.add(textTl, 0);
-
-    // Step 2 — Progress bar (gates on image + fonts)
-    if (bar) {
-      gsap.set(bar, { scaleY: 0, transformOrigin: 'top center' });
-      master.to(bar, { scaleY: 0.85, duration: 0.75, ease: 'power3.out' }, '>');
-
-      master.call(() => {
-        master.pause();
-        const assetsReady = Promise.all([imageReady, document.fonts.ready]);
-        assetsReady.then(() => {
-          if (!skipApplied && !handOffDone) master.resume();
-        });
-        // Hard cap: 8s after gate fires
-        setTimeout(() => {
-          if (!skipApplied && !handOffDone) master.resume();
-        }, 8000);
-      });
-
-      master.to(bar, { scaleY: 1, duration: 0.3, ease: 'power2.in' });
-    }
-  }
-
-  // ── Step 3: Oval rises ─────────────────────────────────────────
-  master.to(ov, {
-    ox: RISE_OX, oy: RISE_OX / 1.3, oc: RISE_OC,
-    duration: ovalDur, ease: 'revealInOut', onUpdate: applyOval,
-  }, isShort ? 0 : '>');
-
-  // ── Step 4: Dive ───────────────────────────────────────────────
-  master.to(ov, {
-    ox: DIVE_OX, oy: DIVE_OX / 1.3,
-    duration: diveDur, ease: 'diveIn', onUpdate: applyOval,
-  }, '>');
-
-  // Hero scale 0.8 → 1 (first 62.5% of dive)
-  if (revealWrap) {
-    master.to(revealWrap, {
-      scale: 1, duration: diveDur * 0.625, ease: 'revealInOut',
-    }, '<');
-  }
-
-  // Fade out preloader content + rim (first 30% of dive)
-  const fadeTs = [content, rimSvg].filter(Boolean);
-  if (fadeTs.length) {
-    master.to(fadeTs, { opacity: 0, duration: diveDur * 0.3, ease: 'none' }, '<');
-  }
-
-  // ── Step 5: Hand-off call ──────────────────────────────────────
-  master.call(handOff);
-
-  // ── Skip ───────────────────────────────────────────────────────
-  function doSkip() {
-    if (skipApplied || handOffDone) return;
-    skipApplied = true;
-    gsap.to(master, {
-      progress: 1, duration: 0.4, ease: 'power2.inOut', overwrite: true,
-      onComplete: handOff,
+    const tl = gsap.timeline({
+      onComplete() {
+        try { sessionStorage.setItem('cghVisited', '1'); } catch(e) {}
+        initReveals();
+        initHeroDive();
+        initFactsHandoff();
+        initStackedSheets();
+        initFeaturedReveal();
+        initStoneCrossfade();
+        ScrollTrigger.refresh();
+      },
     });
-  }
 
-  if (skipBtn) {
-    skipBtn.addEventListener('click', e => { e.stopPropagation(); doSkip(); });
-  }
-  ['wheel', 'touchstart', 'keydown'].forEach(ev =>
-    document.addEventListener(ev, doSkip, { once: true, passive: true })
-  );
+    tl.to(bgImg, {
+      opacity: 1, scale: 1,
+      duration: dur * 1.2, ease: 'power3.out',
+    }, 0);
 
-  // ── Hand-off ───────────────────────────────────────────────────
-  function handOff() {
-    if (handOffDone) return;
-    handOffDone = true;
+    tl.to(header, { opacity: 1, duration: 0.4, ease: 'power2.out' }, dur * 0.25);
 
-    // Remove intro class → CSS rules for preloader drop away
-    document.documentElement.classList.remove('intro-full', 'intro-short');
+    if (splitWords) {
+      tl.to(splitWords.words, {
+        y: 0, opacity: 1,
+        duration: wDur, stagger: wStgr, ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      }, wDly);
+    }
 
-    // Restore reveal-wrap scale
-    if (revealWrap) gsap.set(revealWrap, { clearProps: 'scale,transformOrigin' });
-
-    // Unlock scroll
-    document.documentElement.style.overflow = '';
-    if (lenis) lenis.start();
-
-    // Reveal header
-    gsap.to(header, { opacity: 1, duration: 0.6, ease: 'revealOut', delay: 0.05 });
-
-    // Remove preloader from DOM
-    preloader.remove();
-
-    // Flag session so next visit gets short version
-    try { sessionStorage.setItem('cghVisited', '1'); } catch(e) {}
-
-    // Start page animations
-    Promise.all([document.fonts.ready, imageReady]).then(() => {
-      initReveals();
-      initHeroDive();
-      initFactsHandoff();
-      initStackedSheets();
-      initFeaturedReveal();
-      initStoneCrossfade();
-      ScrollTrigger.refresh();
-    });
-  }
-
-  master.play();
+    if (cta)     tl.to(cta,     { opacity: 1, duration: 0.4, ease: 'power2.out' }, wDly + wDur * 0.7);
+    if (caption) tl.to(caption, { opacity: 1, duration: 0.3, ease: 'none' },       wDly + wDur + 0.1);
+  });
 }
 
 // ─── Hero dive (I2) ─────────────────────────────────────────────────

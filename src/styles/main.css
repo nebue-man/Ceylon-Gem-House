@@ -492,72 +492,42 @@ img {
   will-change: transform;
 }
 
-/* Navy side columns (~4vw each, hidden on mobile) */
-.hero__col {
-  display: none;
-}
-@media (min-width: 900px) {
-  .hero__col {
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 4vw;
-    background: var(--navy);
-    z-index: 2;
-    will-change: transform;
-  }
-  .hero__col--l { left: 0; }
-  .hero__col--r { right: 0; }
-}
-
-/* Centred text overlay (GSAP moves this up on scroll) */
+/* Bottom-left text overlay (GSAP translates this up on scroll) */
 .hero__overlay {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-end;
   z-index: 3;
-  padding: 0 max(4vw, 24px);
+  padding: 0 max(5vw, 28px) clamp(40px, 5vh, 64px);
   gap: 20px;
   will-change: transform;
-}
-
-.hero__brand {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(14px, 2vw, 22px);
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.9);
-}
-
-.hero__tagline {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: clamp(18px, 2.4vw, 30px);
-  color: rgba(242, 237, 228, 0.75);
 }
 
 .hero__heading {
   margin: 0;
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(44px, 6.5vw, 100px);
-  line-height: 0.95;
-  letter-spacing: -0.015em;
+  font-size: clamp(52px, 9vw, 140px);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
   color: #F2EDE4;
 }
 
-/* Accent <em> inside hero heading uses accent colour against dark bg */
-.hero__heading em {
-  color: #A8BFDC; /* muted linen-blue that reads on dark */
-  font-style: italic;
+/* Bottom-right location label */
+.hero__detail {
+  position: absolute;
+  bottom: clamp(28px, 4vh, 48px);
+  right: max(5vw, 28px);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 228, 0.5);
+  z-index: 3;
 }
 
 .hero__actions {
@@ -606,20 +576,6 @@ img {
   text-transform: uppercase;
 }
 
-/* Scroll cue — bottom-centre of stage */
-.hero__scroll-cue {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.5);
-  z-index: 3;
-}
-
 /* Reduced motion: static hero, no sticky, no scroll travel */
 @media (prefers-reduced-motion: reduce) {
   .hero { height: auto; }
@@ -628,206 +584,9 @@ img {
   .hero__overlay { will-change: auto; }
 }
 
-/* ============================================================
-   PRELOADER (I3: intro animation)
-   Shown only when html.intro-full / html.intro-short is set
-   by the inline <head> script before first paint. No-JS and
-   reduced-motion visitors never see it.
-   ============================================================ */
-.preloader {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-}
-html.intro-full .preloader,
-html.intro-short .preloader {
-  display: block;
-}
-
-/* Navy base — JS sets --ox/--oy/--oc to grow the oval hole */
-.preloader__bg {
-  position: absolute;
-  inset: 0;
-  background: var(--navy);
-  --ox: 1px;
-  --oy: 1px;
-  --oc: -100px;
-  -webkit-mask-image: radial-gradient( /* taste-skill-ignore */
-    ellipse var(--ox) var(--oy) at 50% var(--oc),
-    transparent 99.9%, black 100%
-  );
-  mask-image: radial-gradient( /* taste-skill-ignore */
-    ellipse var(--ox) var(--oy) at 50% var(--oc),
-    transparent 99.9%, black 100%
-  );
-}
-
-/* Text + decorative layer (unmasked; fades out during dive) */
-.preloader__content {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* Linen inset frame */
-.preloader__frame {
-  position: absolute;
-  inset: 24px;
-  border: 1px solid rgba(242, 237, 228, 0.18);
-}
-
-/* Faint oval-brilliant facet diagram */
-.preloader__facet {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(55vw, 55vh);
-  height: auto;
-  pointer-events: none;
-}
-
-/* Gem mark — top centre */
-.preloader__mark {
-  position: absolute;
-  top: 44px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(242, 237, 228, 0.6);
-  opacity: 0;
-}
-
-/* Centre text group — sits in upper portion leaving space for oval at 55vh */
-.preloader__centre {
-  position: absolute;
-  top: 25vh;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  width: min(92vw, 1100px);
-  padding: 0 40px;
-  box-sizing: border-box;
-}
-
-.preloader__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: clamp(14px, 2.5vw, 36px);
-  margin-bottom: 14px;
-}
-
-.preloader__wordmark {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(20px, 3vw, 48px);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.95);
-  opacity: 0;
-}
-
-.preloader__sub {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(9px, 0.85vw, 12px);
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.48);
-  white-space: nowrap;
-  opacity: 0;
-}
-
-.preloader__accent {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: clamp(13px, 1.5vw, 21px);
-  color: rgba(242, 237, 228, 0.6);
-  opacity: 0;
-}
-
-/* Bottom: claim + progress bar */
-.preloader__foot {
-  position: absolute;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  opacity: 0;
-}
-
-.preloader__claim {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.38);
-}
-
-.preloader__bar-track {
-  width: 1px;
-  height: 56px;
-  background: rgba(242, 237, 228, 0.12);
-  position: relative;
-  overflow: hidden;
-}
-
-.preloader__bar {
-  position: absolute;
-  inset: 0;
-  background: rgba(242, 237, 228, 0.6);
-  transform: scaleY(0);
-  transform-origin: top center;
-}
-
-/* Oval rim SVG — traces the oval edge in sync with JS */
-.preloader__rim {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-}
-
-/* Skip button */
-.preloader__skip {
-  position: absolute;
-  bottom: 40px;
-  right: 40px;
-  background: none;
-  border: 0;
-  padding: 8px 0;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(242, 237, 228, 0.38);
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.preloader__skip:hover {
-  color: rgba(242, 237, 228, 0.8);
-}
-.preloader__skip:focus-visible {
-  outline: 1px solid rgba(242, 237, 228, 0.4);
-  outline-offset: 4px;
-  color: rgba(242, 237, 228, 0.8);
-}
-
-/* Short version: hide text — show only frame + oval */
-html.intro-short .preloader__mark,
-html.intro-short .preloader__centre,
-html.intro-short .preloader__foot {
-  display: none;
-}
+/* Entrance animation: hide hero video and header before GSAP runs */
+html.cgh-intro .hero__bg-img  { opacity: 0; }
+html.cgh-intro .site-header   { opacity: 0; }
 
 /* ============================================================
    BUTTONS (site-wide, non-hero contexts)
@@ -2195,23 +1954,6 @@ html.js .record__step  { border-bottom: none; }
    at ≥641px so desktop layout is completely untouched.
    ============================================================ */
 @media (max-width: 640px) {
-
-  /* Hero overlay: remove redundant brand/tagline lines.
-     The nav logo already shows the brand; the h1 carries the
-     proposition at large scale. Two fewer small lines declutters
-     the centred overlay at 390px. */
-  .hero__brand,
-  .hero__tagline { display: none; }
-
-  /* Tighten overlay gap — two items removed */
-  .hero__overlay { gap: 16px; }
-
-  /* Stack CTA buttons vertically so each is a full-width tap target */
-  .hero__actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
 
   /* Facts: clear the 64px fixed header with 24px breathing room.
      Without this, the first stat number starts only 8px below the
