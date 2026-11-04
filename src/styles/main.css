@@ -1357,6 +1357,7 @@ html.intro-short .preloader__foot {
 
 .featured__img {
   width: 100%;
+  height: auto;        /* override html height attr so aspect-ratio takes effect */
   aspect-ratio: 16 / 10;
   object-fit: cover;
   display: block;
@@ -2185,4 +2186,59 @@ html.js .record__step  { border-bottom: none; }
 
 @keyframes vt-leave  { to   { opacity: 0; } }
 @keyframes vt-arrive { from { opacity: 0; transform: translateY(16px); } }
+
+/* ============================================================
+   MOBILE REFINEMENTS (≤640px)
+   All rules below are additive overrides — nothing here runs
+   at ≥641px so desktop layout is completely untouched.
+   ============================================================ */
+@media (max-width: 640px) {
+
+  /* Hero overlay: remove redundant brand/tagline lines.
+     The nav logo already shows the brand; the h1 carries the
+     proposition at large scale. Two fewer small lines declutters
+     the centred overlay at 390px. */
+  .hero__brand,
+  .hero__tagline { display: none; }
+
+  /* Tighten overlay gap — two items removed */
+  .hero__overlay { gap: 16px; }
+
+  /* Stack CTA buttons vertically so each is a full-width tap target */
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  /* Facts: clear the 64px fixed header with 24px breathing room.
+     Without this, the first stat number starts only 8px below the
+     header bottom edge. */
+  .facts { padding-top: calc(var(--header-h) + 24px); }
+
+  /* Quote: 128px top/bottom padding creates dead linen space on a
+     phone screen — reduce to a tighter 72px. */
+  .quote { padding-top: 72px; padding-bottom: 72px; }
+
+  /* Origin fallback: same padding reduction as quote */
+  .origin__inner { padding-top: 72px; padding-bottom: 72px; }
+  .origin__header { margin-bottom: 40px; }
+
+  /* Record steps: add hairline dividers so the four step blocks
+     read as separate items rather than a continuous block of text.
+     The desktop rule (html.js .record__steps / .record__step) removes
+     these borders so GSAP reverse-reveal runs without visual noise. */
+  html.js .record__steps { border-top: 1px solid var(--ink-hairline); }
+  html.js .record__step  { border-bottom: 1px solid var(--ink-hairline); }
+}
+
+/* Featured: 112px top padding creates a large navy void before the
+   sapphire image at non-desktop widths. Reduce to 64px.
+   Also fix the image crop: the gem sits in the lower portion of the
+   source photo, so shift object-position down to pull it into view.
+   Both applied at <900px; desktop keeps the original proportions. */
+@media (max-width: 899px) {
+  .featured__inner { padding: 64px var(--page-x); gap: 40px; }
+  .featured__img   { object-position: 50% 65%; }
+}
 
