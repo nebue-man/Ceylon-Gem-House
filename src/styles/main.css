@@ -1275,6 +1275,7 @@ html.intro-short .preloader__foot {
 
 .origin-card img {
   width: 100%;
+  height: auto;        /* override html height attr so aspect-ratio takes effect */
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
