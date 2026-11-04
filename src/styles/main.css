@@ -489,6 +489,7 @@ img {
   object-fit: cover;
   object-position: center 50%;
   display: block;
+  will-change: transform;
 }
 
 /* Navy side columns (~4vw each, hidden on mobile) */

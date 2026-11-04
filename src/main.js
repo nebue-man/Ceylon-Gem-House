@@ -762,23 +762,45 @@ function initHeroDive() {
 
     heroDiveST = tl.scrollTrigger;
 
-    // Video scrub: scroll drives currentTime, stops at 82% to avoid
+    // Video scrub: scroll drives currentTime, stops at 49% to avoid
     // repeating the final frame that matches The Pit origin section.
+    // Seeks are batched via requestVideoFrameCallback (rVFC) so the
+    // browser only receives one currentTime write per rendered frame,
+    // eliminating decoder queue pile-up. Falls back to rAF on browsers
+    // without rVFC. scrub:1 matches the parallax timeline's lerp so
+    // transforms and frame content stay in sync.
     if (bgImg.tagName === 'VIDEO') {
-      const vid        = bgImg;
+      const vid         = bgImg;
       const endFraction = 0.49;
+      const hasRVFC     = 'requestVideoFrameCallback' in vid;
 
       const setupVideoScrub = () => {
         if (!vid.duration) return;
         const endTime = vid.duration * endFraction;
+
+        let targetTime    = 0;
+        let seekScheduled = false;
+
+        function flushSeek() {
+          vid.currentTime = targetTime;
+          seekScheduled   = false;
+        }
+
+        function scheduleSeek(t) {
+          targetTime = t;
+          if (seekScheduled) return;
+          seekScheduled = true;
+          if (hasRVFC) vid.requestVideoFrameCallback(flushSeek);
+          else         requestAnimationFrame(flushSeek);
+        }
+
         heroVideoST = ScrollTrigger.create({
           trigger: hero,
           start:   'top top',
           end:     'bottom bottom',
-          scrub:   true,
+          scrub:   1,
           onUpdate(self) {
-            const t = self.progress * endTime;
-            vid.currentTime = t;
+            scheduleSeek(self.progress * endTime);
           },
         });
       };
